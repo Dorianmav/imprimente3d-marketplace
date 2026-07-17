@@ -1,0 +1,43 @@
+export default defineNuxtRouteMiddleware((to) => {
+  const publicRoutes = [
+    "/",
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+    "/about",
+    "/contact",
+    "/pricing",
+    "/terms",
+    "/privacy",
+    "/faq",
+    "/blog",
+    "/careers",
+    "/press",
+    "/support",
+    "/community",
+    "/features",
+    "/demo",
+    "/testimonials",
+    "/resources",
+    "/events",
+    "/webinars",
+    "/case-studies",
+    "/whitepapers",
+    "/ebooks",
+    "/guides",
+    "/templates",
+    "/checklists",
+    "/calculators",
+    "/quizzes",
+    "/surveys",
+  ];
+
+  if (publicRoutes.includes(to.path)) return;
+
+  const accessToken = useCookie("accessToken");
+
+  if (!accessToken.value) {
+    return navigateTo("/login");
+  }
+});

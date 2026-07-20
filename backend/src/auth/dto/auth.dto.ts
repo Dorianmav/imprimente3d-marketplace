@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, MaxLength, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength, IsOptional, IsEnum } from 'class-validator';
 
 export class SignupDto {
   @IsEmail()
@@ -10,8 +10,18 @@ export class SignupDto {
   password: string;
 
   @IsString()
+  @MinLength(2)
   @MaxLength(100)
-  name: string;
+  nom: string;
+
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  prenom: string;
+
+  @IsOptional()
+  @IsEnum(['particulier', 'pro'])
+  typeCompte?: 'particulier' | 'pro';
 }
 
 export class LoginDto {

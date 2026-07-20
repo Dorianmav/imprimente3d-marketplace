@@ -20,70 +20,172 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
 
+export type UserAvgAggregateOutputType = {
+  noteMoyenne: number | null
+  nbAvis: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  noteMoyenne: number | null
+  nbAvis: number | null
+}
+
 export type UserMinAggregateOutputType = {
   id: string | null
-  name: string | null
   email: string | null
-  password: string | null
-  refreshToken: string | null
-  plan: string | null
+  passwordHash: string | null
+  nom: string | null
+  prenom: string | null
+  typeCompte: $Enums.TypeCompte | null
+  avatar: string | null
+  stripeCustomerId: string | null
+  stripeAccountId: string | null
+  stripeOnboardingComplete: boolean | null
+  noteMoyenne: number | null
+  nbAvis: number | null
+  siret: string | null
+  numeroTva: string | null
+  nomCommercial: string | null
+  adresseFacturation: string | null
+  stripeBusinessType: string | null
   createdAt: Date | null
+  updatedAt: Date | null
+  refreshToken: string | null
 }
 
 export type UserMaxAggregateOutputType = {
   id: string | null
-  name: string | null
   email: string | null
-  password: string | null
-  refreshToken: string | null
-  plan: string | null
+  passwordHash: string | null
+  nom: string | null
+  prenom: string | null
+  typeCompte: $Enums.TypeCompte | null
+  avatar: string | null
+  stripeCustomerId: string | null
+  stripeAccountId: string | null
+  stripeOnboardingComplete: boolean | null
+  noteMoyenne: number | null
+  nbAvis: number | null
+  siret: string | null
+  numeroTva: string | null
+  nomCommercial: string | null
+  adresseFacturation: string | null
+  stripeBusinessType: string | null
   createdAt: Date | null
+  updatedAt: Date | null
+  refreshToken: string | null
 }
 
 export type UserCountAggregateOutputType = {
   id: number
-  name: number
   email: number
-  password: number
-  refreshToken: number
-  plan: number
+  passwordHash: number
+  nom: number
+  prenom: number
+  typeCompte: number
+  avatar: number
+  localisation: number
+  stripeCustomerId: number
+  stripeAccountId: number
+  stripeOnboardingComplete: number
+  noteMoyenne: number
+  nbAvis: number
+  siret: number
+  numeroTva: number
+  nomCommercial: number
+  adresseFacturation: number
+  stripeBusinessType: number
   createdAt: number
+  updatedAt: number
+  refreshToken: number
   _all: number
 }
 
 
+export type UserAvgAggregateInputType = {
+  noteMoyenne?: true
+  nbAvis?: true
+}
+
+export type UserSumAggregateInputType = {
+  noteMoyenne?: true
+  nbAvis?: true
+}
+
 export type UserMinAggregateInputType = {
   id?: true
-  name?: true
   email?: true
-  password?: true
-  refreshToken?: true
-  plan?: true
+  passwordHash?: true
+  nom?: true
+  prenom?: true
+  typeCompte?: true
+  avatar?: true
+  stripeCustomerId?: true
+  stripeAccountId?: true
+  stripeOnboardingComplete?: true
+  noteMoyenne?: true
+  nbAvis?: true
+  siret?: true
+  numeroTva?: true
+  nomCommercial?: true
+  adresseFacturation?: true
+  stripeBusinessType?: true
   createdAt?: true
+  updatedAt?: true
+  refreshToken?: true
 }
 
 export type UserMaxAggregateInputType = {
   id?: true
-  name?: true
   email?: true
-  password?: true
-  refreshToken?: true
-  plan?: true
+  passwordHash?: true
+  nom?: true
+  prenom?: true
+  typeCompte?: true
+  avatar?: true
+  stripeCustomerId?: true
+  stripeAccountId?: true
+  stripeOnboardingComplete?: true
+  noteMoyenne?: true
+  nbAvis?: true
+  siret?: true
+  numeroTva?: true
+  nomCommercial?: true
+  adresseFacturation?: true
+  stripeBusinessType?: true
   createdAt?: true
+  updatedAt?: true
+  refreshToken?: true
 }
 
 export type UserCountAggregateInputType = {
   id?: true
-  name?: true
   email?: true
-  password?: true
-  refreshToken?: true
-  plan?: true
+  passwordHash?: true
+  nom?: true
+  prenom?: true
+  typeCompte?: true
+  avatar?: true
+  localisation?: true
+  stripeCustomerId?: true
+  stripeAccountId?: true
+  stripeOnboardingComplete?: true
+  noteMoyenne?: true
+  nbAvis?: true
+  siret?: true
+  numeroTva?: true
+  nomCommercial?: true
+  adresseFacturation?: true
+  stripeBusinessType?: true
   createdAt?: true
+  updatedAt?: true
+  refreshToken?: true
   _all?: true
 }
 
@@ -125,6 +227,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -155,19 +269,37 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
 
 export type UserGroupByOutputType = {
   id: string
-  name: string
   email: string
-  password: string
-  refreshToken: string | null
-  plan: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar: string | null
+  localisation: runtime.JsonValue | null
+  stripeCustomerId: string | null
+  stripeAccountId: string | null
+  stripeOnboardingComplete: boolean
+  noteMoyenne: number
+  nbAvis: number
+  siret: string | null
+  numeroTva: string | null
+  nomCommercial: string | null
+  adresseFacturation: string | null
+  stripeBusinessType: string | null
   createdAt: Date
+  updatedAt: Date
+  refreshToken: string | null
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -192,26 +324,78 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
-  name?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
-  password?: Prisma.StringFilter<"User"> | string
-  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
-  plan?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  nom?: Prisma.StringFilter<"User"> | string
+  prenom?: Prisma.StringFilter<"User"> | string
+  typeCompte?: Prisma.EnumTypeCompteFilter<"User"> | $Enums.TypeCompte
+  avatar?: Prisma.StringNullableFilter<"User"> | string | null
+  localisation?: Prisma.JsonNullableFilter<"User">
+  stripeCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeAccountId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeOnboardingComplete?: Prisma.BoolFilter<"User"> | boolean
+  noteMoyenne?: Prisma.FloatFilter<"User"> | number
+  nbAvis?: Prisma.IntFilter<"User"> | number
+  siret?: Prisma.StringNullableFilter<"User"> | string | null
+  numeroTva?: Prisma.StringNullableFilter<"User"> | string | null
+  nomCommercial?: Prisma.StringNullableFilter<"User"> | string | null
+  adresseFacturation?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeBusinessType?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  scans?: Prisma.ScanListRelationFilter
-  subscriptions?: Prisma.SubscriptionListRelationFilter
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  imprimeurProfil?: Prisma.XOR<Prisma.ImprimeurProfilNullableScalarRelationFilter, Prisma.ImprimeurProfilWhereInput> | null
+  annoncesVente?: Prisma.AnnonceVenteListRelationFilter
+  annoncesDemande?: Prisma.AnnonceDemandeListRelationFilter
+  devis?: Prisma.DevisListRelationFilter
+  commandesAcheteur?: Prisma.CommandeListRelationFilter
+  commandesVendeur?: Prisma.CommandeListRelationFilter
+  avisDonnes?: Prisma.AvisListRelationFilter
+  avisRecus?: Prisma.AvisListRelationFilter
+  conversations?: Prisma.ConversationParticipantListRelationFilter
+  messages?: Prisma.MessageListRelationFilter
+  offres?: Prisma.OffreMessagerieListRelationFilter
+  signalements?: Prisma.SignalementMessagerieListRelationFilter
+  blocksInitiated?: Prisma.UserBlockListRelationFilter
+  blocksReceived?: Prisma.UserBlockListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
-  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
-  plan?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  nom?: Prisma.SortOrder
+  prenom?: Prisma.SortOrder
+  typeCompte?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
+  localisation?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeOnboardingComplete?: Prisma.SortOrder
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
+  siret?: Prisma.SortOrderInput | Prisma.SortOrder
+  numeroTva?: Prisma.SortOrderInput | Prisma.SortOrder
+  nomCommercial?: Prisma.SortOrderInput | Prisma.SortOrder
+  adresseFacturation?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeBusinessType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  scans?: Prisma.ScanOrderByRelationAggregateInput
-  subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
+  updatedAt?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  imprimeurProfil?: Prisma.ImprimeurProfilOrderByWithRelationInput
+  annoncesVente?: Prisma.AnnonceVenteOrderByRelationAggregateInput
+  annoncesDemande?: Prisma.AnnonceDemandeOrderByRelationAggregateInput
+  devis?: Prisma.DevisOrderByRelationAggregateInput
+  commandesAcheteur?: Prisma.CommandeOrderByRelationAggregateInput
+  commandesVendeur?: Prisma.CommandeOrderByRelationAggregateInput
+  avisDonnes?: Prisma.AvisOrderByRelationAggregateInput
+  avisRecus?: Prisma.AvisOrderByRelationAggregateInput
+  conversations?: Prisma.ConversationParticipantOrderByRelationAggregateInput
+  messages?: Prisma.MessageOrderByRelationAggregateInput
+  offres?: Prisma.OffreMessagerieOrderByRelationAggregateInput
+  signalements?: Prisma.SignalementMessagerieOrderByRelationAggregateInput
+  blocksInitiated?: Prisma.UserBlockOrderByRelationAggregateInput
+  blocksReceived?: Prisma.UserBlockOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -220,26 +404,68 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  name?: Prisma.StringFilter<"User"> | string
-  password?: Prisma.StringFilter<"User"> | string
-  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
-  plan?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  nom?: Prisma.StringFilter<"User"> | string
+  prenom?: Prisma.StringFilter<"User"> | string
+  typeCompte?: Prisma.EnumTypeCompteFilter<"User"> | $Enums.TypeCompte
+  avatar?: Prisma.StringNullableFilter<"User"> | string | null
+  localisation?: Prisma.JsonNullableFilter<"User">
+  stripeCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeAccountId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeOnboardingComplete?: Prisma.BoolFilter<"User"> | boolean
+  noteMoyenne?: Prisma.FloatFilter<"User"> | number
+  nbAvis?: Prisma.IntFilter<"User"> | number
+  siret?: Prisma.StringNullableFilter<"User"> | string | null
+  numeroTva?: Prisma.StringNullableFilter<"User"> | string | null
+  nomCommercial?: Prisma.StringNullableFilter<"User"> | string | null
+  adresseFacturation?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeBusinessType?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  scans?: Prisma.ScanListRelationFilter
-  subscriptions?: Prisma.SubscriptionListRelationFilter
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  imprimeurProfil?: Prisma.XOR<Prisma.ImprimeurProfilNullableScalarRelationFilter, Prisma.ImprimeurProfilWhereInput> | null
+  annoncesVente?: Prisma.AnnonceVenteListRelationFilter
+  annoncesDemande?: Prisma.AnnonceDemandeListRelationFilter
+  devis?: Prisma.DevisListRelationFilter
+  commandesAcheteur?: Prisma.CommandeListRelationFilter
+  commandesVendeur?: Prisma.CommandeListRelationFilter
+  avisDonnes?: Prisma.AvisListRelationFilter
+  avisRecus?: Prisma.AvisListRelationFilter
+  conversations?: Prisma.ConversationParticipantListRelationFilter
+  messages?: Prisma.MessageListRelationFilter
+  offres?: Prisma.OffreMessagerieListRelationFilter
+  signalements?: Prisma.SignalementMessagerieListRelationFilter
+  blocksInitiated?: Prisma.UserBlockListRelationFilter
+  blocksReceived?: Prisma.UserBlockListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
-  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
-  plan?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  nom?: Prisma.SortOrder
+  prenom?: Prisma.SortOrder
+  typeCompte?: Prisma.SortOrder
+  avatar?: Prisma.SortOrderInput | Prisma.SortOrder
+  localisation?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeAccountId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeOnboardingComplete?: Prisma.SortOrder
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
+  siret?: Prisma.SortOrderInput | Prisma.SortOrder
+  numeroTva?: Prisma.SortOrderInput | Prisma.SortOrder
+  nomCommercial?: Prisma.SortOrderInput | Prisma.SortOrder
+  adresseFacturation?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeBusinessType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -247,120 +473,330 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
-  name?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
-  password?: Prisma.StringWithAggregatesFilter<"User"> | string
-  refreshToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  plan?: Prisma.StringWithAggregatesFilter<"User"> | string
+  passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
+  nom?: Prisma.StringWithAggregatesFilter<"User"> | string
+  prenom?: Prisma.StringWithAggregatesFilter<"User"> | string
+  typeCompte?: Prisma.EnumTypeCompteWithAggregatesFilter<"User"> | $Enums.TypeCompte
+  avatar?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  localisation?: Prisma.JsonNullableWithAggregatesFilter<"User">
+  stripeCustomerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  stripeAccountId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  stripeOnboardingComplete?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  noteMoyenne?: Prisma.FloatWithAggregatesFilter<"User"> | number
+  nbAvis?: Prisma.IntWithAggregatesFilter<"User"> | number
+  siret?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  numeroTva?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  nomCommercial?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  adresseFacturation?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  stripeBusinessType?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  refreshToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  scans?: Prisma.ScanCreateNestedManyWithoutUserInput
-  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  scans?: Prisma.ScanUncheckedCreateNestedManyWithoutUserInput
-  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
 }
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scans?: Prisma.ScanUpdateManyWithoutUserNestedInput
-  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scans?: Prisma.ScanUncheckedUpdateManyWithoutUserNestedInput
-  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
-  refreshToken?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  nom?: Prisma.SortOrder
+  prenom?: Prisma.SortOrder
+  typeCompte?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  localisation?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeAccountId?: Prisma.SortOrder
+  stripeOnboardingComplete?: Prisma.SortOrder
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
+  siret?: Prisma.SortOrder
+  numeroTva?: Prisma.SortOrder
+  nomCommercial?: Prisma.SortOrder
+  adresseFacturation?: Prisma.SortOrder
+  stripeBusinessType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
-  refreshToken?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  nom?: Prisma.SortOrder
+  prenom?: Prisma.SortOrder
+  typeCompte?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeAccountId?: Prisma.SortOrder
+  stripeOnboardingComplete?: Prisma.SortOrder
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
+  siret?: Prisma.SortOrder
+  numeroTva?: Prisma.SortOrder
+  nomCommercial?: Prisma.SortOrder
+  adresseFacturation?: Prisma.SortOrder
+  stripeBusinessType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
-  refreshToken?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  nom?: Prisma.SortOrder
+  prenom?: Prisma.SortOrder
+  typeCompte?: Prisma.SortOrder
+  avatar?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeAccountId?: Prisma.SortOrder
+  stripeOnboardingComplete?: Prisma.SortOrder
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
+  siret?: Prisma.SortOrder
+  numeroTva?: Prisma.SortOrder
+  nomCommercial?: Prisma.SortOrder
+  adresseFacturation?: Prisma.SortOrder
+  stripeBusinessType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  noteMoyenne?: Prisma.SortOrder
+  nbAvis?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -372,160 +808,2528 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
+export type EnumTypeCompteFieldUpdateOperationsInput = {
+  set?: $Enums.TypeCompte
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
-export type UserCreateNestedOneWithoutScansInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutScansInput, Prisma.UserUncheckedCreateWithoutScansInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScansInput
+export type UserCreateNestedOneWithoutImprimeurProfilInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImprimeurProfilInput, Prisma.UserUncheckedCreateWithoutImprimeurProfilInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImprimeurProfilInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutScansNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutScansInput, Prisma.UserUncheckedCreateWithoutScansInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScansInput
-  upsert?: Prisma.UserUpsertWithoutScansInput
+export type UserUpdateOneRequiredWithoutImprimeurProfilNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImprimeurProfilInput, Prisma.UserUncheckedCreateWithoutImprimeurProfilInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImprimeurProfilInput
+  upsert?: Prisma.UserUpsertWithoutImprimeurProfilInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutScansInput, Prisma.UserUpdateWithoutScansInput>, Prisma.UserUncheckedUpdateWithoutScansInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImprimeurProfilInput, Prisma.UserUpdateWithoutImprimeurProfilInput>, Prisma.UserUncheckedUpdateWithoutImprimeurProfilInput>
 }
 
-export type UserCreateNestedOneWithoutSubscriptionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionsInput
+export type UserCreateNestedOneWithoutAnnoncesVenteInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesVenteInput, Prisma.UserUncheckedCreateWithoutAnnoncesVenteInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAnnoncesVenteInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutSubscriptionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionsInput
-  upsert?: Prisma.UserUpsertWithoutSubscriptionsInput
+export type UserUpdateOneRequiredWithoutAnnoncesVenteNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesVenteInput, Prisma.UserUncheckedCreateWithoutAnnoncesVenteInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAnnoncesVenteInput
+  upsert?: Prisma.UserUpsertWithoutAnnoncesVenteInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.UserUpdateWithoutSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAnnoncesVenteInput, Prisma.UserUpdateWithoutAnnoncesVenteInput>, Prisma.UserUncheckedUpdateWithoutAnnoncesVenteInput>
 }
 
-export type UserCreateWithoutScansInput = {
+export type UserCreateNestedOneWithoutAnnoncesDemandeInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedCreateWithoutAnnoncesDemandeInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAnnoncesDemandeInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAnnoncesDemandeNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedCreateWithoutAnnoncesDemandeInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAnnoncesDemandeInput
+  upsert?: Prisma.UserUpsertWithoutAnnoncesDemandeInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAnnoncesDemandeInput, Prisma.UserUpdateWithoutAnnoncesDemandeInput>, Prisma.UserUncheckedUpdateWithoutAnnoncesDemandeInput>
+}
+
+export type UserCreateNestedOneWithoutDevisInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDevisInput, Prisma.UserUncheckedCreateWithoutDevisInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDevisInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDevisNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDevisInput, Prisma.UserUncheckedCreateWithoutDevisInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDevisInput
+  upsert?: Prisma.UserUpsertWithoutDevisInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDevisInput, Prisma.UserUpdateWithoutDevisInput>, Prisma.UserUncheckedUpdateWithoutDevisInput>
+}
+
+export type UserCreateNestedOneWithoutCommandesAcheteurInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommandesAcheteurInput, Prisma.UserUncheckedCreateWithoutCommandesAcheteurInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommandesAcheteurInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutCommandesVendeurInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommandesVendeurInput, Prisma.UserUncheckedCreateWithoutCommandesVendeurInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommandesVendeurInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCommandesAcheteurNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommandesAcheteurInput, Prisma.UserUncheckedCreateWithoutCommandesAcheteurInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommandesAcheteurInput
+  upsert?: Prisma.UserUpsertWithoutCommandesAcheteurInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommandesAcheteurInput, Prisma.UserUpdateWithoutCommandesAcheteurInput>, Prisma.UserUncheckedUpdateWithoutCommandesAcheteurInput>
+}
+
+export type UserUpdateOneRequiredWithoutCommandesVendeurNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCommandesVendeurInput, Prisma.UserUncheckedCreateWithoutCommandesVendeurInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommandesVendeurInput
+  upsert?: Prisma.UserUpsertWithoutCommandesVendeurInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommandesVendeurInput, Prisma.UserUpdateWithoutCommandesVendeurInput>, Prisma.UserUncheckedUpdateWithoutCommandesVendeurInput>
+}
+
+export type UserCreateNestedOneWithoutAvisDonnesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAvisDonnesInput, Prisma.UserUncheckedCreateWithoutAvisDonnesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAvisDonnesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutAvisRecusInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAvisRecusInput, Prisma.UserUncheckedCreateWithoutAvisRecusInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAvisRecusInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAvisDonnesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAvisDonnesInput, Prisma.UserUncheckedCreateWithoutAvisDonnesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAvisDonnesInput
+  upsert?: Prisma.UserUpsertWithoutAvisDonnesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAvisDonnesInput, Prisma.UserUpdateWithoutAvisDonnesInput>, Prisma.UserUncheckedUpdateWithoutAvisDonnesInput>
+}
+
+export type UserUpdateOneRequiredWithoutAvisRecusNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAvisRecusInput, Prisma.UserUncheckedCreateWithoutAvisRecusInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAvisRecusInput
+  upsert?: Prisma.UserUpsertWithoutAvisRecusInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAvisRecusInput, Prisma.UserUpdateWithoutAvisRecusInput>, Prisma.UserUncheckedUpdateWithoutAvisRecusInput>
+}
+
+export type UserCreateNestedOneWithoutConversationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConversationsInput, Prisma.UserUncheckedCreateWithoutConversationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConversationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutConversationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConversationsInput, Prisma.UserUncheckedCreateWithoutConversationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConversationsInput
+  upsert?: Prisma.UserUpsertWithoutConversationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConversationsInput, Prisma.UserUpdateWithoutConversationsInput>, Prisma.UserUncheckedUpdateWithoutConversationsInput>
+}
+
+export type UserCreateNestedOneWithoutMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
+  upsert?: Prisma.UserUpsertWithoutMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessagesInput, Prisma.UserUpdateWithoutMessagesInput>, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+}
+
+export type UserCreateNestedOneWithoutOffresInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOffresInput, Prisma.UserUncheckedCreateWithoutOffresInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOffresInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutOffresNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOffresInput, Prisma.UserUncheckedCreateWithoutOffresInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOffresInput
+  upsert?: Prisma.UserUpsertWithoutOffresInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOffresInput, Prisma.UserUpdateWithoutOffresInput>, Prisma.UserUncheckedUpdateWithoutOffresInput>
+}
+
+export type UserCreateNestedOneWithoutSignalementsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSignalementsInput, Prisma.UserUncheckedCreateWithoutSignalementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSignalementsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSignalementsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSignalementsInput, Prisma.UserUncheckedCreateWithoutSignalementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSignalementsInput
+  upsert?: Prisma.UserUpsertWithoutSignalementsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSignalementsInput, Prisma.UserUpdateWithoutSignalementsInput>, Prisma.UserUncheckedUpdateWithoutSignalementsInput>
+}
+
+export type UserCreateNestedOneWithoutBlocksInitiatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocksInitiatedInput, Prisma.UserUncheckedCreateWithoutBlocksInitiatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocksInitiatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutBlocksReceivedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocksReceivedInput, Prisma.UserUncheckedCreateWithoutBlocksReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocksReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBlocksInitiatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocksInitiatedInput, Prisma.UserUncheckedCreateWithoutBlocksInitiatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocksInitiatedInput
+  upsert?: Prisma.UserUpsertWithoutBlocksInitiatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBlocksInitiatedInput, Prisma.UserUpdateWithoutBlocksInitiatedInput>, Prisma.UserUncheckedUpdateWithoutBlocksInitiatedInput>
+}
+
+export type UserUpdateOneRequiredWithoutBlocksReceivedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocksReceivedInput, Prisma.UserUncheckedCreateWithoutBlocksReceivedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocksReceivedInput
+  upsert?: Prisma.UserUpsertWithoutBlocksReceivedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBlocksReceivedInput, Prisma.UserUpdateWithoutBlocksReceivedInput>, Prisma.UserUncheckedUpdateWithoutBlocksReceivedInput>
+}
+
+export type UserCreateWithoutImprimeurProfilInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
 }
 
-export type UserUncheckedCreateWithoutScansInput = {
+export type UserUncheckedCreateWithoutImprimeurProfilInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
 }
 
-export type UserCreateOrConnectWithoutScansInput = {
+export type UserCreateOrConnectWithoutImprimeurProfilInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutScansInput, Prisma.UserUncheckedCreateWithoutScansInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImprimeurProfilInput, Prisma.UserUncheckedCreateWithoutImprimeurProfilInput>
 }
 
-export type UserUpsertWithoutScansInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutScansInput, Prisma.UserUncheckedUpdateWithoutScansInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutScansInput, Prisma.UserUncheckedCreateWithoutScansInput>
+export type UserUpsertWithoutImprimeurProfilInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImprimeurProfilInput, Prisma.UserUncheckedUpdateWithoutImprimeurProfilInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImprimeurProfilInput, Prisma.UserUncheckedCreateWithoutImprimeurProfilInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutScansInput = {
+export type UserUpdateToOneWithWhereWithoutImprimeurProfilInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutScansInput, Prisma.UserUncheckedUpdateWithoutScansInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImprimeurProfilInput, Prisma.UserUncheckedUpdateWithoutImprimeurProfilInput>
 }
 
-export type UserUpdateWithoutScansInput = {
+export type UserUpdateWithoutImprimeurProfilInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
 }
 
-export type UserUncheckedUpdateWithoutScansInput = {
+export type UserUncheckedUpdateWithoutImprimeurProfilInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
 }
 
-export type UserCreateWithoutSubscriptionsInput = {
+export type UserCreateWithoutAnnoncesVenteInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  scans?: Prisma.ScanCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
 }
 
-export type UserUncheckedCreateWithoutSubscriptionsInput = {
+export type UserUncheckedCreateWithoutAnnoncesVenteInput = {
   id?: string
-  name: string
   email: string
-  password: string
-  refreshToken?: string | null
-  plan?: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
   createdAt?: Date | string
-  scans?: Prisma.ScanUncheckedCreateNestedManyWithoutUserInput
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
 }
 
-export type UserCreateOrConnectWithoutSubscriptionsInput = {
+export type UserCreateOrConnectWithoutAnnoncesVenteInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesVenteInput, Prisma.UserUncheckedCreateWithoutAnnoncesVenteInput>
 }
 
-export type UserUpsertWithoutSubscriptionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+export type UserUpsertWithoutAnnoncesVenteInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAnnoncesVenteInput, Prisma.UserUncheckedUpdateWithoutAnnoncesVenteInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesVenteInput, Prisma.UserUncheckedCreateWithoutAnnoncesVenteInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutSubscriptionsInput = {
+export type UserUpdateToOneWithWhereWithoutAnnoncesVenteInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAnnoncesVenteInput, Prisma.UserUncheckedUpdateWithoutAnnoncesVenteInput>
 }
 
-export type UserUpdateWithoutSubscriptionsInput = {
+export type UserUpdateWithoutAnnoncesVenteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scans?: Prisma.ScanUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
 }
 
-export type UserUncheckedUpdateWithoutSubscriptionsInput = {
+export type UserUncheckedUpdateWithoutAnnoncesVenteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scans?: Prisma.ScanUncheckedUpdateManyWithoutUserNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutAnnoncesDemandeInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutAnnoncesDemandeInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutAnnoncesDemandeInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedCreateWithoutAnnoncesDemandeInput>
+}
+
+export type UserUpsertWithoutAnnoncesDemandeInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedUpdateWithoutAnnoncesDemandeInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedCreateWithoutAnnoncesDemandeInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAnnoncesDemandeInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAnnoncesDemandeInput, Prisma.UserUncheckedUpdateWithoutAnnoncesDemandeInput>
+}
+
+export type UserUpdateWithoutAnnoncesDemandeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAnnoncesDemandeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutDevisInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutDevisInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutDevisInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDevisInput, Prisma.UserUncheckedCreateWithoutDevisInput>
+}
+
+export type UserUpsertWithoutDevisInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDevisInput, Prisma.UserUncheckedUpdateWithoutDevisInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDevisInput, Prisma.UserUncheckedCreateWithoutDevisInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDevisInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDevisInput, Prisma.UserUncheckedUpdateWithoutDevisInput>
+}
+
+export type UserUpdateWithoutDevisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDevisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutCommandesAcheteurInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutCommandesAcheteurInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutCommandesAcheteurInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommandesAcheteurInput, Prisma.UserUncheckedCreateWithoutCommandesAcheteurInput>
+}
+
+export type UserCreateWithoutCommandesVendeurInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutCommandesVendeurInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutCommandesVendeurInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommandesVendeurInput, Prisma.UserUncheckedCreateWithoutCommandesVendeurInput>
+}
+
+export type UserUpsertWithoutCommandesAcheteurInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommandesAcheteurInput, Prisma.UserUncheckedUpdateWithoutCommandesAcheteurInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommandesAcheteurInput, Prisma.UserUncheckedCreateWithoutCommandesAcheteurInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommandesAcheteurInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommandesAcheteurInput, Prisma.UserUncheckedUpdateWithoutCommandesAcheteurInput>
+}
+
+export type UserUpdateWithoutCommandesAcheteurInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommandesAcheteurInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUpsertWithoutCommandesVendeurInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCommandesVendeurInput, Prisma.UserUncheckedUpdateWithoutCommandesVendeurInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCommandesVendeurInput, Prisma.UserUncheckedCreateWithoutCommandesVendeurInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCommandesVendeurInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCommandesVendeurInput, Prisma.UserUncheckedUpdateWithoutCommandesVendeurInput>
+}
+
+export type UserUpdateWithoutCommandesVendeurInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCommandesVendeurInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutAvisDonnesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutAvisDonnesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutAvisDonnesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAvisDonnesInput, Prisma.UserUncheckedCreateWithoutAvisDonnesInput>
+}
+
+export type UserCreateWithoutAvisRecusInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutAvisRecusInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutAvisRecusInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAvisRecusInput, Prisma.UserUncheckedCreateWithoutAvisRecusInput>
+}
+
+export type UserUpsertWithoutAvisDonnesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAvisDonnesInput, Prisma.UserUncheckedUpdateWithoutAvisDonnesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAvisDonnesInput, Prisma.UserUncheckedCreateWithoutAvisDonnesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAvisDonnesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAvisDonnesInput, Prisma.UserUncheckedUpdateWithoutAvisDonnesInput>
+}
+
+export type UserUpdateWithoutAvisDonnesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAvisDonnesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUpsertWithoutAvisRecusInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAvisRecusInput, Prisma.UserUncheckedUpdateWithoutAvisRecusInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAvisRecusInput, Prisma.UserUncheckedCreateWithoutAvisRecusInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAvisRecusInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAvisRecusInput, Prisma.UserUncheckedUpdateWithoutAvisRecusInput>
+}
+
+export type UserUpdateWithoutAvisRecusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAvisRecusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutConversationsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutConversationsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutConversationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConversationsInput, Prisma.UserUncheckedCreateWithoutConversationsInput>
+}
+
+export type UserUpsertWithoutConversationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConversationsInput, Prisma.UserUncheckedUpdateWithoutConversationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConversationsInput, Prisma.UserUncheckedCreateWithoutConversationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutConversationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConversationsInput, Prisma.UserUncheckedUpdateWithoutConversationsInput>
+}
+
+export type UserUpdateWithoutConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutMessagesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutMessagesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+}
+
+export type UserUpsertWithoutMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
+}
+
+export type UserUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutOffresInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutOffresInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutOffresInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOffresInput, Prisma.UserUncheckedCreateWithoutOffresInput>
+}
+
+export type UserUpsertWithoutOffresInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOffresInput, Prisma.UserUncheckedUpdateWithoutOffresInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOffresInput, Prisma.UserUncheckedCreateWithoutOffresInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOffresInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOffresInput, Prisma.UserUncheckedUpdateWithoutOffresInput>
+}
+
+export type UserUpdateWithoutOffresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOffresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutSignalementsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutSignalementsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutSignalementsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSignalementsInput, Prisma.UserUncheckedCreateWithoutSignalementsInput>
+}
+
+export type UserUpsertWithoutSignalementsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSignalementsInput, Prisma.UserUncheckedUpdateWithoutSignalementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSignalementsInput, Prisma.UserUncheckedCreateWithoutSignalementsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSignalementsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSignalementsInput, Prisma.UserUncheckedUpdateWithoutSignalementsInput>
+}
+
+export type UserUpdateWithoutSignalementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSignalementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserCreateWithoutBlocksInitiatedInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksReceived?: Prisma.UserBlockCreateNestedManyWithoutBlockedInput
+}
+
+export type UserUncheckedCreateWithoutBlocksInitiatedInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksReceived?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockedInput
+}
+
+export type UserCreateOrConnectWithoutBlocksInitiatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocksInitiatedInput, Prisma.UserUncheckedCreateWithoutBlocksInitiatedInput>
+}
+
+export type UserCreateWithoutBlocksReceivedInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockCreateNestedManyWithoutBlockerInput
+}
+
+export type UserUncheckedCreateWithoutBlocksReceivedInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  nom: string
+  prenom: string
+  typeCompte: $Enums.TypeCompte
+  avatar?: string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: string | null
+  stripeAccountId?: string | null
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: number
+  nbAvis?: number
+  siret?: string | null
+  numeroTva?: string | null
+  nomCommercial?: string | null
+  adresseFacturation?: string | null
+  stripeBusinessType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  refreshToken?: string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedCreateNestedOneWithoutUserInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedCreateNestedManyWithoutVendeurInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedCreateNestedManyWithoutAcheteurInput
+  devis?: Prisma.DevisUncheckedCreateNestedManyWithoutImprimeurInput
+  commandesAcheteur?: Prisma.CommandeUncheckedCreateNestedManyWithoutAcheteurInput
+  commandesVendeur?: Prisma.CommandeUncheckedCreateNestedManyWithoutVendeurInput
+  avisDonnes?: Prisma.AvisUncheckedCreateNestedManyWithoutAuteurInput
+  avisRecus?: Prisma.AvisUncheckedCreateNestedManyWithoutCibleInput
+  conversations?: Prisma.ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutExpediteurInput
+  offres?: Prisma.OffreMessagerieUncheckedCreateNestedManyWithoutExpediteurInput
+  signalements?: Prisma.SignalementMessagerieUncheckedCreateNestedManyWithoutReporterInput
+  blocksInitiated?: Prisma.UserBlockUncheckedCreateNestedManyWithoutBlockerInput
+}
+
+export type UserCreateOrConnectWithoutBlocksReceivedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocksReceivedInput, Prisma.UserUncheckedCreateWithoutBlocksReceivedInput>
+}
+
+export type UserUpsertWithoutBlocksInitiatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBlocksInitiatedInput, Prisma.UserUncheckedUpdateWithoutBlocksInitiatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocksInitiatedInput, Prisma.UserUncheckedCreateWithoutBlocksInitiatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBlocksInitiatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBlocksInitiatedInput, Prisma.UserUncheckedUpdateWithoutBlocksInitiatedInput>
+}
+
+export type UserUpdateWithoutBlocksInitiatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksReceived?: Prisma.UserBlockUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBlocksInitiatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksReceived?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockedNestedInput
+}
+
+export type UserUpsertWithoutBlocksReceivedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBlocksReceivedInput, Prisma.UserUncheckedUpdateWithoutBlocksReceivedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocksReceivedInput, Prisma.UserUncheckedCreateWithoutBlocksReceivedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBlocksReceivedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBlocksReceivedInput, Prisma.UserUncheckedUpdateWithoutBlocksReceivedInput>
+}
+
+export type UserUpdateWithoutBlocksReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUpdateManyWithoutBlockerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBlocksReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  typeCompte?: Prisma.EnumTypeCompteFieldUpdateOperationsInput | $Enums.TypeCompte
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localisation?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeOnboardingComplete?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  noteMoyenne?: Prisma.FloatFieldUpdateOperationsInput | number
+  nbAvis?: Prisma.IntFieldUpdateOperationsInput | number
+  siret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  numeroTva?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nomCommercial?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresseFacturation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeBusinessType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imprimeurProfil?: Prisma.ImprimeurProfilUncheckedUpdateOneWithoutUserNestedInput
+  annoncesVente?: Prisma.AnnonceVenteUncheckedUpdateManyWithoutVendeurNestedInput
+  annoncesDemande?: Prisma.AnnonceDemandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  devis?: Prisma.DevisUncheckedUpdateManyWithoutImprimeurNestedInput
+  commandesAcheteur?: Prisma.CommandeUncheckedUpdateManyWithoutAcheteurNestedInput
+  commandesVendeur?: Prisma.CommandeUncheckedUpdateManyWithoutVendeurNestedInput
+  avisDonnes?: Prisma.AvisUncheckedUpdateManyWithoutAuteurNestedInput
+  avisRecus?: Prisma.AvisUncheckedUpdateManyWithoutCibleNestedInput
+  conversations?: Prisma.ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutExpediteurNestedInput
+  offres?: Prisma.OffreMessagerieUncheckedUpdateManyWithoutExpediteurNestedInput
+  signalements?: Prisma.SignalementMessagerieUncheckedUpdateManyWithoutReporterNestedInput
+  blocksInitiated?: Prisma.UserBlockUncheckedUpdateManyWithoutBlockerNestedInput
 }
 
 
@@ -534,13 +3338,35 @@ export type UserUncheckedUpdateWithoutSubscriptionsInput = {
  */
 
 export type UserCountOutputType = {
-  scans: number
-  subscriptions: number
+  annoncesVente: number
+  annoncesDemande: number
+  devis: number
+  commandesAcheteur: number
+  commandesVendeur: number
+  avisDonnes: number
+  avisRecus: number
+  conversations: number
+  messages: number
+  offres: number
+  signalements: number
+  blocksInitiated: number
+  blocksReceived: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scans?: boolean | UserCountOutputTypeCountScansArgs
-  subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
+  annoncesVente?: boolean | UserCountOutputTypeCountAnnoncesVenteArgs
+  annoncesDemande?: boolean | UserCountOutputTypeCountAnnoncesDemandeArgs
+  devis?: boolean | UserCountOutputTypeCountDevisArgs
+  commandesAcheteur?: boolean | UserCountOutputTypeCountCommandesAcheteurArgs
+  commandesVendeur?: boolean | UserCountOutputTypeCountCommandesVendeurArgs
+  avisDonnes?: boolean | UserCountOutputTypeCountAvisDonnesArgs
+  avisRecus?: boolean | UserCountOutputTypeCountAvisRecusArgs
+  conversations?: boolean | UserCountOutputTypeCountConversationsArgs
+  messages?: boolean | UserCountOutputTypeCountMessagesArgs
+  offres?: boolean | UserCountOutputTypeCountOffresArgs
+  signalements?: boolean | UserCountOutputTypeCountSignalementsArgs
+  blocksInitiated?: boolean | UserCountOutputTypeCountBlocksInitiatedArgs
+  blocksReceived?: boolean | UserCountOutputTypeCountBlocksReceivedArgs
 }
 
 /**
@@ -556,65 +3382,222 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountScansArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ScanWhereInput
+export type UserCountOutputTypeCountAnnoncesVenteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AnnonceVenteWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SubscriptionWhereInput
+export type UserCountOutputTypeCountAnnoncesDemandeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AnnonceDemandeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDevisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DevisWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommandesAcheteurArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommandeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCommandesVendeurArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommandeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAvisDonnesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AvisWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAvisRecusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AvisWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConversationParticipantWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MessageWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOffresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OffreMessagerieWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSignalementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SignalementMessagerieWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBlocksInitiatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserBlockWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBlocksReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserBlockWhereInput
 }
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
   email?: boolean
-  password?: boolean
-  refreshToken?: boolean
-  plan?: boolean
+  passwordHash?: boolean
+  nom?: boolean
+  prenom?: boolean
+  typeCompte?: boolean
+  avatar?: boolean
+  localisation?: boolean
+  stripeCustomerId?: boolean
+  stripeAccountId?: boolean
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: boolean
+  nbAvis?: boolean
+  siret?: boolean
+  numeroTva?: boolean
+  nomCommercial?: boolean
+  adresseFacturation?: boolean
+  stripeBusinessType?: boolean
   createdAt?: boolean
-  scans?: boolean | Prisma.User$scansArgs<ExtArgs>
-  subscriptions?: boolean | Prisma.User$subscriptionsArgs<ExtArgs>
+  updatedAt?: boolean
+  refreshToken?: boolean
+  imprimeurProfil?: boolean | Prisma.User$imprimeurProfilArgs<ExtArgs>
+  annoncesVente?: boolean | Prisma.User$annoncesVenteArgs<ExtArgs>
+  annoncesDemande?: boolean | Prisma.User$annoncesDemandeArgs<ExtArgs>
+  devis?: boolean | Prisma.User$devisArgs<ExtArgs>
+  commandesAcheteur?: boolean | Prisma.User$commandesAcheteurArgs<ExtArgs>
+  commandesVendeur?: boolean | Prisma.User$commandesVendeurArgs<ExtArgs>
+  avisDonnes?: boolean | Prisma.User$avisDonnesArgs<ExtArgs>
+  avisRecus?: boolean | Prisma.User$avisRecusArgs<ExtArgs>
+  conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
+  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  offres?: boolean | Prisma.User$offresArgs<ExtArgs>
+  signalements?: boolean | Prisma.User$signalementsArgs<ExtArgs>
+  blocksInitiated?: boolean | Prisma.User$blocksInitiatedArgs<ExtArgs>
+  blocksReceived?: boolean | Prisma.User$blocksReceivedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
   email?: boolean
-  password?: boolean
-  refreshToken?: boolean
-  plan?: boolean
+  passwordHash?: boolean
+  nom?: boolean
+  prenom?: boolean
+  typeCompte?: boolean
+  avatar?: boolean
+  localisation?: boolean
+  stripeCustomerId?: boolean
+  stripeAccountId?: boolean
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: boolean
+  nbAvis?: boolean
+  siret?: boolean
+  numeroTva?: boolean
+  nomCommercial?: boolean
+  adresseFacturation?: boolean
+  stripeBusinessType?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  refreshToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
   email?: boolean
-  password?: boolean
-  refreshToken?: boolean
-  plan?: boolean
+  passwordHash?: boolean
+  nom?: boolean
+  prenom?: boolean
+  typeCompte?: boolean
+  avatar?: boolean
+  localisation?: boolean
+  stripeCustomerId?: boolean
+  stripeAccountId?: boolean
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: boolean
+  nbAvis?: boolean
+  siret?: boolean
+  numeroTva?: boolean
+  nomCommercial?: boolean
+  adresseFacturation?: boolean
+  stripeBusinessType?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  refreshToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
   id?: boolean
-  name?: boolean
   email?: boolean
-  password?: boolean
-  refreshToken?: boolean
-  plan?: boolean
+  passwordHash?: boolean
+  nom?: boolean
+  prenom?: boolean
+  typeCompte?: boolean
+  avatar?: boolean
+  localisation?: boolean
+  stripeCustomerId?: boolean
+  stripeAccountId?: boolean
+  stripeOnboardingComplete?: boolean
+  noteMoyenne?: boolean
+  nbAvis?: boolean
+  siret?: boolean
+  numeroTva?: boolean
+  nomCommercial?: boolean
+  adresseFacturation?: boolean
+  stripeBusinessType?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
+  refreshToken?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "refreshToken" | "plan" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "nom" | "prenom" | "typeCompte" | "avatar" | "localisation" | "stripeCustomerId" | "stripeAccountId" | "stripeOnboardingComplete" | "noteMoyenne" | "nbAvis" | "siret" | "numeroTva" | "nomCommercial" | "adresseFacturation" | "stripeBusinessType" | "createdAt" | "updatedAt" | "refreshToken", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scans?: boolean | Prisma.User$scansArgs<ExtArgs>
-  subscriptions?: boolean | Prisma.User$subscriptionsArgs<ExtArgs>
+  imprimeurProfil?: boolean | Prisma.User$imprimeurProfilArgs<ExtArgs>
+  annoncesVente?: boolean | Prisma.User$annoncesVenteArgs<ExtArgs>
+  annoncesDemande?: boolean | Prisma.User$annoncesDemandeArgs<ExtArgs>
+  devis?: boolean | Prisma.User$devisArgs<ExtArgs>
+  commandesAcheteur?: boolean | Prisma.User$commandesAcheteurArgs<ExtArgs>
+  commandesVendeur?: boolean | Prisma.User$commandesVendeurArgs<ExtArgs>
+  avisDonnes?: boolean | Prisma.User$avisDonnesArgs<ExtArgs>
+  avisRecus?: boolean | Prisma.User$avisRecusArgs<ExtArgs>
+  conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
+  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  offres?: boolean | Prisma.User$offresArgs<ExtArgs>
+  signalements?: boolean | Prisma.User$signalementsArgs<ExtArgs>
+  blocksInitiated?: boolean | Prisma.User$blocksInitiatedArgs<ExtArgs>
+  blocksReceived?: boolean | Prisma.User$blocksReceivedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -623,17 +3606,43 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    scans: Prisma.$ScanPayload<ExtArgs>[]
-    subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
+    imprimeurProfil: Prisma.$ImprimeurProfilPayload<ExtArgs> | null
+    annoncesVente: Prisma.$AnnonceVentePayload<ExtArgs>[]
+    annoncesDemande: Prisma.$AnnonceDemandePayload<ExtArgs>[]
+    devis: Prisma.$DevisPayload<ExtArgs>[]
+    commandesAcheteur: Prisma.$CommandePayload<ExtArgs>[]
+    commandesVendeur: Prisma.$CommandePayload<ExtArgs>[]
+    avisDonnes: Prisma.$AvisPayload<ExtArgs>[]
+    avisRecus: Prisma.$AvisPayload<ExtArgs>[]
+    conversations: Prisma.$ConversationParticipantPayload<ExtArgs>[]
+    messages: Prisma.$MessagePayload<ExtArgs>[]
+    offres: Prisma.$OffreMessageriePayload<ExtArgs>[]
+    signalements: Prisma.$SignalementMessageriePayload<ExtArgs>[]
+    blocksInitiated: Prisma.$UserBlockPayload<ExtArgs>[]
+    blocksReceived: Prisma.$UserBlockPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    name: string
     email: string
-    password: string
-    refreshToken: string | null
-    plan: string
+    passwordHash: string
+    nom: string
+    prenom: string
+    typeCompte: $Enums.TypeCompte
+    avatar: string | null
+    localisation: runtime.JsonValue | null
+    stripeCustomerId: string | null
+    stripeAccountId: string | null
+    stripeOnboardingComplete: boolean
+    noteMoyenne: number
+    nbAvis: number
+    siret: string | null
+    numeroTva: string | null
+    nomCommercial: string | null
+    adresseFacturation: string | null
+    stripeBusinessType: string | null
     createdAt: Date
+    updatedAt: Date
+    refreshToken: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1028,8 +4037,20 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  scans<T extends Prisma.User$scansArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$scansArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  subscriptions<T extends Prisma.User$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  imprimeurProfil<T extends Prisma.User$imprimeurProfilArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$imprimeurProfilArgs<ExtArgs>>): Prisma.Prisma__ImprimeurProfilClient<runtime.Types.Result.GetResult<Prisma.$ImprimeurProfilPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  annoncesVente<T extends Prisma.User$annoncesVenteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$annoncesVenteArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnonceVentePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  annoncesDemande<T extends Prisma.User$annoncesDemandeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$annoncesDemandeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnonceDemandePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  devis<T extends Prisma.User$devisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$devisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DevisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commandesAcheteur<T extends Prisma.User$commandesAcheteurArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commandesAcheteurArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommandePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  commandesVendeur<T extends Prisma.User$commandesVendeurArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commandesVendeurArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommandePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  avisDonnes<T extends Prisma.User$avisDonnesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$avisDonnesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  avisRecus<T extends Prisma.User$avisRecusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$avisRecusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  conversations<T extends Prisma.User$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  offres<T extends Prisma.User$offresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$offresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OffreMessageriePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  signalements<T extends Prisma.User$signalementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$signalementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SignalementMessageriePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blocksInitiated<T extends Prisma.User$blocksInitiatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blocksInitiatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blocksReceived<T extends Prisma.User$blocksReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blocksReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1060,12 +4081,26 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
-  readonly name: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
-  readonly password: Prisma.FieldRef<"User", 'String'>
-  readonly refreshToken: Prisma.FieldRef<"User", 'String'>
-  readonly plan: Prisma.FieldRef<"User", 'String'>
+  readonly passwordHash: Prisma.FieldRef<"User", 'String'>
+  readonly nom: Prisma.FieldRef<"User", 'String'>
+  readonly prenom: Prisma.FieldRef<"User", 'String'>
+  readonly typeCompte: Prisma.FieldRef<"User", 'TypeCompte'>
+  readonly avatar: Prisma.FieldRef<"User", 'String'>
+  readonly localisation: Prisma.FieldRef<"User", 'Json'>
+  readonly stripeCustomerId: Prisma.FieldRef<"User", 'String'>
+  readonly stripeAccountId: Prisma.FieldRef<"User", 'String'>
+  readonly stripeOnboardingComplete: Prisma.FieldRef<"User", 'Boolean'>
+  readonly noteMoyenne: Prisma.FieldRef<"User", 'Float'>
+  readonly nbAvis: Prisma.FieldRef<"User", 'Int'>
+  readonly siret: Prisma.FieldRef<"User", 'String'>
+  readonly numeroTva: Prisma.FieldRef<"User", 'String'>
+  readonly nomCommercial: Prisma.FieldRef<"User", 'String'>
+  readonly adresseFacturation: Prisma.FieldRef<"User", 'String'>
+  readonly stripeBusinessType: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly refreshToken: Prisma.FieldRef<"User", 'String'>
 }
     
 
@@ -1459,51 +4494,334 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.scans
+ * User.imprimeurProfil
  */
-export type User$scansArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$imprimeurProfilArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Scan
+   * Select specific fields to fetch from the ImprimeurProfil
    */
-  select?: Prisma.ScanSelect<ExtArgs> | null
+  select?: Prisma.ImprimeurProfilSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Scan
+   * Omit specific fields from the ImprimeurProfil
    */
-  omit?: Prisma.ScanOmit<ExtArgs> | null
+  omit?: Prisma.ImprimeurProfilOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ScanInclude<ExtArgs> | null
-  where?: Prisma.ScanWhereInput
-  orderBy?: Prisma.ScanOrderByWithRelationInput | Prisma.ScanOrderByWithRelationInput[]
-  cursor?: Prisma.ScanWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ScanScalarFieldEnum | Prisma.ScanScalarFieldEnum[]
+  include?: Prisma.ImprimeurProfilInclude<ExtArgs> | null
+  where?: Prisma.ImprimeurProfilWhereInput
 }
 
 /**
- * User.subscriptions
+ * User.annoncesVente
  */
-export type User$subscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$annoncesVenteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Subscription
+   * Select specific fields to fetch from the AnnonceVente
    */
-  select?: Prisma.SubscriptionSelect<ExtArgs> | null
+  select?: Prisma.AnnonceVenteSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Subscription
+   * Omit specific fields from the AnnonceVente
    */
-  omit?: Prisma.SubscriptionOmit<ExtArgs> | null
+  omit?: Prisma.AnnonceVenteOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SubscriptionInclude<ExtArgs> | null
-  where?: Prisma.SubscriptionWhereInput
-  orderBy?: Prisma.SubscriptionOrderByWithRelationInput | Prisma.SubscriptionOrderByWithRelationInput[]
-  cursor?: Prisma.SubscriptionWhereUniqueInput
+  include?: Prisma.AnnonceVenteInclude<ExtArgs> | null
+  where?: Prisma.AnnonceVenteWhereInput
+  orderBy?: Prisma.AnnonceVenteOrderByWithRelationInput | Prisma.AnnonceVenteOrderByWithRelationInput[]
+  cursor?: Prisma.AnnonceVenteWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SubscriptionScalarFieldEnum | Prisma.SubscriptionScalarFieldEnum[]
+  distinct?: Prisma.AnnonceVenteScalarFieldEnum | Prisma.AnnonceVenteScalarFieldEnum[]
+}
+
+/**
+ * User.annoncesDemande
+ */
+export type User$annoncesDemandeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AnnonceDemande
+   */
+  select?: Prisma.AnnonceDemandeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AnnonceDemande
+   */
+  omit?: Prisma.AnnonceDemandeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AnnonceDemandeInclude<ExtArgs> | null
+  where?: Prisma.AnnonceDemandeWhereInput
+  orderBy?: Prisma.AnnonceDemandeOrderByWithRelationInput | Prisma.AnnonceDemandeOrderByWithRelationInput[]
+  cursor?: Prisma.AnnonceDemandeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AnnonceDemandeScalarFieldEnum | Prisma.AnnonceDemandeScalarFieldEnum[]
+}
+
+/**
+ * User.devis
+ */
+export type User$devisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Devis
+   */
+  select?: Prisma.DevisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Devis
+   */
+  omit?: Prisma.DevisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DevisInclude<ExtArgs> | null
+  where?: Prisma.DevisWhereInput
+  orderBy?: Prisma.DevisOrderByWithRelationInput | Prisma.DevisOrderByWithRelationInput[]
+  cursor?: Prisma.DevisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DevisScalarFieldEnum | Prisma.DevisScalarFieldEnum[]
+}
+
+/**
+ * User.commandesAcheteur
+ */
+export type User$commandesAcheteurArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Commande
+   */
+  select?: Prisma.CommandeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Commande
+   */
+  omit?: Prisma.CommandeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommandeInclude<ExtArgs> | null
+  where?: Prisma.CommandeWhereInput
+  orderBy?: Prisma.CommandeOrderByWithRelationInput | Prisma.CommandeOrderByWithRelationInput[]
+  cursor?: Prisma.CommandeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommandeScalarFieldEnum | Prisma.CommandeScalarFieldEnum[]
+}
+
+/**
+ * User.commandesVendeur
+ */
+export type User$commandesVendeurArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Commande
+   */
+  select?: Prisma.CommandeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Commande
+   */
+  omit?: Prisma.CommandeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommandeInclude<ExtArgs> | null
+  where?: Prisma.CommandeWhereInput
+  orderBy?: Prisma.CommandeOrderByWithRelationInput | Prisma.CommandeOrderByWithRelationInput[]
+  cursor?: Prisma.CommandeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommandeScalarFieldEnum | Prisma.CommandeScalarFieldEnum[]
+}
+
+/**
+ * User.avisDonnes
+ */
+export type User$avisDonnesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Avis
+   */
+  select?: Prisma.AvisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Avis
+   */
+  omit?: Prisma.AvisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AvisInclude<ExtArgs> | null
+  where?: Prisma.AvisWhereInput
+  orderBy?: Prisma.AvisOrderByWithRelationInput | Prisma.AvisOrderByWithRelationInput[]
+  cursor?: Prisma.AvisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AvisScalarFieldEnum | Prisma.AvisScalarFieldEnum[]
+}
+
+/**
+ * User.avisRecus
+ */
+export type User$avisRecusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Avis
+   */
+  select?: Prisma.AvisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Avis
+   */
+  omit?: Prisma.AvisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AvisInclude<ExtArgs> | null
+  where?: Prisma.AvisWhereInput
+  orderBy?: Prisma.AvisOrderByWithRelationInput | Prisma.AvisOrderByWithRelationInput[]
+  cursor?: Prisma.AvisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AvisScalarFieldEnum | Prisma.AvisScalarFieldEnum[]
+}
+
+/**
+ * User.conversations
+ */
+export type User$conversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConversationParticipant
+   */
+  select?: Prisma.ConversationParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConversationParticipant
+   */
+  omit?: Prisma.ConversationParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationParticipantInclude<ExtArgs> | null
+  where?: Prisma.ConversationParticipantWhereInput
+  orderBy?: Prisma.ConversationParticipantOrderByWithRelationInput | Prisma.ConversationParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.ConversationParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConversationParticipantScalarFieldEnum | Prisma.ConversationParticipantScalarFieldEnum[]
+}
+
+/**
+ * User.messages
+ */
+export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Message
+   */
+  select?: Prisma.MessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Message
+   */
+  omit?: Prisma.MessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessageInclude<ExtArgs> | null
+  where?: Prisma.MessageWhereInput
+  orderBy?: Prisma.MessageOrderByWithRelationInput | Prisma.MessageOrderByWithRelationInput[]
+  cursor?: Prisma.MessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MessageScalarFieldEnum | Prisma.MessageScalarFieldEnum[]
+}
+
+/**
+ * User.offres
+ */
+export type User$offresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OffreMessagerie
+   */
+  select?: Prisma.OffreMessagerieSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OffreMessagerie
+   */
+  omit?: Prisma.OffreMessagerieOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OffreMessagerieInclude<ExtArgs> | null
+  where?: Prisma.OffreMessagerieWhereInput
+  orderBy?: Prisma.OffreMessagerieOrderByWithRelationInput | Prisma.OffreMessagerieOrderByWithRelationInput[]
+  cursor?: Prisma.OffreMessagerieWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OffreMessagerieScalarFieldEnum | Prisma.OffreMessagerieScalarFieldEnum[]
+}
+
+/**
+ * User.signalements
+ */
+export type User$signalementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SignalementMessagerie
+   */
+  select?: Prisma.SignalementMessagerieSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SignalementMessagerie
+   */
+  omit?: Prisma.SignalementMessagerieOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SignalementMessagerieInclude<ExtArgs> | null
+  where?: Prisma.SignalementMessagerieWhereInput
+  orderBy?: Prisma.SignalementMessagerieOrderByWithRelationInput | Prisma.SignalementMessagerieOrderByWithRelationInput[]
+  cursor?: Prisma.SignalementMessagerieWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SignalementMessagerieScalarFieldEnum | Prisma.SignalementMessagerieScalarFieldEnum[]
+}
+
+/**
+ * User.blocksInitiated
+ */
+export type User$blocksInitiatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserBlock
+   */
+  select?: Prisma.UserBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserBlock
+   */
+  omit?: Prisma.UserBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserBlockInclude<ExtArgs> | null
+  where?: Prisma.UserBlockWhereInput
+  orderBy?: Prisma.UserBlockOrderByWithRelationInput | Prisma.UserBlockOrderByWithRelationInput[]
+  cursor?: Prisma.UserBlockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserBlockScalarFieldEnum | Prisma.UserBlockScalarFieldEnum[]
+}
+
+/**
+ * User.blocksReceived
+ */
+export type User$blocksReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserBlock
+   */
+  select?: Prisma.UserBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserBlock
+   */
+  omit?: Prisma.UserBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserBlockInclude<ExtArgs> | null
+  where?: Prisma.UserBlockWhereInput
+  orderBy?: Prisma.UserBlockOrderByWithRelationInput | Prisma.UserBlockOrderByWithRelationInput[]
+  cursor?: Prisma.UserBlockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserBlockScalarFieldEnum | Prisma.UserBlockScalarFieldEnum[]
 }
 
 /**

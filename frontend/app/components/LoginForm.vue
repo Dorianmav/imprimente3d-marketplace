@@ -8,14 +8,15 @@ const schema = z.object({
   email: z.email("Invalid email"),
   password: z
     .string("Password is required")
-    .min(8, "Must be at least 8 characters"),
+    .min(8, "Must be at least 8 characters")
+    .max(128, "Must be at most 128 characters")
 });
 
 type Schema = z.output<typeof schema>;
 
 const state = reactive<Partial<Schema>>({
-  email: undefined,
-  password: undefined,
+  email:  "",
+  password: ""
 });
 
 const emit = defineEmits<{ submit: [data: Schema] }>();
@@ -35,6 +36,6 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
       <UInput v-model="state.password" type="password" />
     </UFormField>
 
-    <UButton type="submit" :loading="loading"> Submit </UButton>
+    <UButton type="submit" :loading="loading"> Se connecter </UButton>
   </UForm>
 </template>

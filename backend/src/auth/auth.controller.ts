@@ -25,10 +25,7 @@ export class AuthController {
   async signup(@Body() signupDto: SignupDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.signup(signupDto);
     this.setRefreshTokenCookie(res, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-    };
+    return result;
   }
 
   @Post('login')
@@ -36,10 +33,7 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.login(loginDto);
     this.setRefreshTokenCookie(res, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-    };
+    return result;
   }
 
   @Post('refresh')

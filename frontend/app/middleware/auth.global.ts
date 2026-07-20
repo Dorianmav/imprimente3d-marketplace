@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const publicRoutes = [
     "/",
     "/login",
@@ -35,9 +35,14 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (publicRoutes.includes(to.path)) return;
 
-  const accessToken = useCookie("accessToken");
+  const { accessToken, initAuth } = useAuth();
 
-  if (!accessToken.value) {
-    return navigateTo("/login");
+  if (accessToken.value) {
+    return;
+  }
+
+  const restored = await initAuth();
+  if (!restored) {
+    return navigateTo('/login');
   }
 });

@@ -23,7 +23,7 @@ async function handleLogin(data: { email: string; password: string }) {
   <div class="flex min-h-screen items-center justify-center">
     <div class="w-full max-w-sm">
       <h1 class="text-2xl font-bold mb-6">Login</h1>
-      <LogInForm :loading="loading" @submit="handleLogin" />
+      <LoginForm :loading="loading" @submit="handleLogin" />
     </div>
   </div>
 </template>

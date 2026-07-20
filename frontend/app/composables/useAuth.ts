@@ -41,12 +41,12 @@ export function useAuth() {
     return res;
   }
 
-  async function signup(email: string, password: string, name: string) {
+  async function signup(prenom: string, nom: string, email: string, password: string, typeCompte: string) {
     const res = await $fetch<AuthResponse>(
       `${config.public.apiBase}/auth/signup`,
       {
         method: "POST",
-        body: { email, password, name },
+        body: { prenom, nom, email, password, typeCompte },
       },
     );
 
@@ -82,7 +82,7 @@ export function useAuth() {
   }
 
   async function fetchProfile() {
-    const res = await $fetch<User>(`${config.public.apiBase}/auth/profile`, {
+    const res = await $fetch<User>(`${config.public.apiBase}/auth/me`, {
       headers: { Authorization: `Bearer ${accessToken.value}` },
     });
     user.value = res;

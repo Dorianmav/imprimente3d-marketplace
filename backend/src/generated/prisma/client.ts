@@ -45,17 +45,62 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Scan
+ * Model ImprimeurProfil
  * 
  */
-export type Scan = Prisma.ScanModel
+export type ImprimeurProfil = Prisma.ImprimeurProfilModel
 /**
- * Model ScanItem
+ * Model AnnonceVente
  * 
  */
-export type ScanItem = Prisma.ScanItemModel
+export type AnnonceVente = Prisma.AnnonceVenteModel
 /**
- * Model Subscription
+ * Model AnnonceDemande
  * 
  */
-export type Subscription = Prisma.SubscriptionModel
+export type AnnonceDemande = Prisma.AnnonceDemandeModel
+/**
+ * Model Devis
+ * 
+ */
+export type Devis = Prisma.DevisModel
+/**
+ * Model Commande
+ * 
+ */
+export type Commande = Prisma.CommandeModel
+/**
+ * Model Avis
+ * 
+ */
+export type Avis = Prisma.AvisModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model ConversationParticipant
+ * 
+ */
+export type ConversationParticipant = Prisma.ConversationParticipantModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model OffreMessagerie
+ * 
+ */
+export type OffreMessagerie = Prisma.OffreMessagerieModel
+/**
+ * Model SignalementMessagerie
+ * 
+ */
+export type SignalementMessagerie = Prisma.SignalementMessagerieModel
+/**
+ * Model UserBlock
+ * 
+ */
+export type UserBlock = Prisma.UserBlockModel

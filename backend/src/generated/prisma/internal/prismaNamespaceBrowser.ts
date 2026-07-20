@@ -52,9 +52,18 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Scan: 'Scan',
-  ScanItem: 'ScanItem',
-  Subscription: 'Subscription'
+  ImprimeurProfil: 'ImprimeurProfil',
+  AnnonceVente: 'AnnonceVente',
+  AnnonceDemande: 'AnnonceDemande',
+  Devis: 'Devis',
+  Commande: 'Commande',
+  Avis: 'Avis',
+  Conversation: 'Conversation',
+  ConversationParticipant: 'ConversationParticipant',
+  Message: 'Message',
+  OffreMessagerie: 'OffreMessagerie',
+  SignalementMessagerie: 'SignalementMessagerie',
+  UserBlock: 'UserBlock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -75,54 +84,215 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   email: 'email',
-  password: 'password',
-  refreshToken: 'refreshToken',
-  plan: 'plan',
-  createdAt: 'createdAt'
+  passwordHash: 'passwordHash',
+  nom: 'nom',
+  prenom: 'prenom',
+  typeCompte: 'typeCompte',
+  avatar: 'avatar',
+  localisation: 'localisation',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeAccountId: 'stripeAccountId',
+  stripeOnboardingComplete: 'stripeOnboardingComplete',
+  noteMoyenne: 'noteMoyenne',
+  nbAvis: 'nbAvis',
+  siret: 'siret',
+  numeroTva: 'numeroTva',
+  nomCommercial: 'nomCommercial',
+  adresseFacturation: 'adresseFacturation',
+  stripeBusinessType: 'stripeBusinessType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  refreshToken: 'refreshToken'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const ScanScalarFieldEnum = {
-  id: 'id',
+export const ImprimeurProfilScalarFieldEnum = {
   userId: 'userId',
-  imageUrl: 'imageUrl',
-  status: 'status',
-  rawAiResponse: 'rawAiResponse',
+  bio: 'bio',
+  imprimantes: 'imprimantes',
+  materiaux: 'materiaux',
+  localisation: 'localisation',
+  zoneExpedition: 'zoneExpedition',
+  delaiMoyenJours: 'delaiMoyenJours',
+  tarifsIndicatifs: 'tarifsIndicatifs',
+  disponible: 'disponible'
+} as const
+
+export type ImprimeurProfilScalarFieldEnum = (typeof ImprimeurProfilScalarFieldEnum)[keyof typeof ImprimeurProfilScalarFieldEnum]
+
+
+export const AnnonceVenteScalarFieldEnum = {
+  id: 'id',
+  vendeurId: 'vendeurId',
+  titre: 'titre',
+  description: 'description',
+  categorie: 'categorie',
+  materiau: 'materiau',
+  couleur: 'couleur',
+  photos: 'photos',
+  prixProduit: 'prixProduit',
+  modeLivraison: 'modeLivraison',
+  fraisLivraison: 'fraisLivraison',
+  stock: 'stock',
+  statut: 'statut',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AnnonceVenteScalarFieldEnum = (typeof AnnonceVenteScalarFieldEnum)[keyof typeof AnnonceVenteScalarFieldEnum]
+
+
+export const AnnonceDemandeScalarFieldEnum = {
+  id: 'id',
+  acheteurId: 'acheteurId',
+  titre: 'titre',
+  description: 'description',
+  fichier3d: 'fichier3d',
+  photosReference: 'photosReference',
+  budgetMax: 'budgetMax',
+  materiauSouhaite: 'materiauSouhaite',
+  couleurSouhaitee: 'couleurSouhaitee',
+  quantite: 'quantite',
+  statut: 'statut',
+  dateExpiration: 'dateExpiration',
   createdAt: 'createdAt'
 } as const
 
-export type ScanScalarFieldEnum = (typeof ScanScalarFieldEnum)[keyof typeof ScanScalarFieldEnum]
+export type AnnonceDemandeScalarFieldEnum = (typeof AnnonceDemandeScalarFieldEnum)[keyof typeof AnnonceDemandeScalarFieldEnum]
 
 
-export const ScanItemScalarFieldEnum = {
+export const DevisScalarFieldEnum = {
   id: 'id',
-  scanId: 'scanId',
-  foodName: 'foodName',
-  kcal: 'kcal',
-  protein: 'protein',
-  carbs: 'carbs',
-  fat: 'fat',
-  portionG: 'portionG',
-  confidence: 'confidence'
+  demandeId: 'demandeId',
+  imprimeurId: 'imprimeurId',
+  prixProduit: 'prixProduit',
+  fraisLivraison: 'fraisLivraison',
+  delaiJours: 'delaiJours',
+  materiauPropose: 'materiauPropose',
+  couleurProposee: 'couleurProposee',
+  message: 'message',
+  statut: 'statut',
+  createdAt: 'createdAt'
 } as const
 
-export type ScanItemScalarFieldEnum = (typeof ScanItemScalarFieldEnum)[keyof typeof ScanItemScalarFieldEnum]
+export type DevisScalarFieldEnum = (typeof DevisScalarFieldEnum)[keyof typeof DevisScalarFieldEnum]
 
 
-export const SubscriptionScalarFieldEnum = {
+export const CommandeScalarFieldEnum = {
   id: 'id',
+  acheteurId: 'acheteurId',
+  vendeurId: 'vendeurId',
+  sourceType: 'sourceType',
+  sourceId: 'sourceId',
+  montantProduit: 'montantProduit',
+  fraisLivraison: 'fraisLivraison',
+  commissionPct: 'commissionPct',
+  commissionFixe: 'commissionFixe',
+  commissionTotale: 'commissionTotale',
+  montantTotalAcheteur: 'montantTotalAcheteur',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  stripeTransferId: 'stripeTransferId',
+  statut: 'statut',
+  trackingInfo: 'trackingInfo',
+  dateExpedition: 'dateExpedition',
+  dateLivraisonConfirmee: 'dateLivraisonConfirmee',
+  dateLiberationAuto: 'dateLiberationAuto',
+  facturePdfKey: 'facturePdfKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommandeScalarFieldEnum = (typeof CommandeScalarFieldEnum)[keyof typeof CommandeScalarFieldEnum]
+
+
+export const AvisScalarFieldEnum = {
+  id: 'id',
+  commandeId: 'commandeId',
+  auteurId: 'auteurId',
+  cibleId: 'cibleId',
+  note: 'note',
+  commentaire: 'commentaire',
+  type: 'type',
+  createdAt: 'createdAt'
+} as const
+
+export type AvisScalarFieldEnum = (typeof AvisScalarFieldEnum)[keyof typeof AvisScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  annonceType: 'annonceType',
+  annonceId: 'annonceId',
+  createdAt: 'createdAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const ConversationParticipantScalarFieldEnum = {
+  conversationId: 'conversationId',
   userId: 'userId',
-  stripeCustomerId: 'stripeCustomerId',
-  stripeSubId: 'stripeSubId',
-  status: 'status',
-  currentPeriodEnd: 'currentPeriodEnd'
+  dernierLuAt: 'dernierLuAt'
 } as const
 
-export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+export type ConversationParticipantScalarFieldEnum = (typeof ConversationParticipantScalarFieldEnum)[keyof typeof ConversationParticipantScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  expediteurId: 'expediteurId',
+  type: 'type',
+  contenu: 'contenu',
+  offreId: 'offreId',
+  piecesJointes: 'piecesJointes',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const OffreMessagerieScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  expediteurId: 'expediteurId',
+  annonceType: 'annonceType',
+  annonceId: 'annonceId',
+  montant: 'montant',
+  fraisLivraison: 'fraisLivraison',
+  statut: 'statut',
+  parentOffreId: 'parentOffreId',
+  createdAt: 'createdAt'
+} as const
+
+export type OffreMessagerieScalarFieldEnum = (typeof OffreMessagerieScalarFieldEnum)[keyof typeof OffreMessagerieScalarFieldEnum]
+
+
+export const SignalementMessagerieScalarFieldEnum = {
+  id: 'id',
+  reporterId: 'reporterId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  motif: 'motif',
+  statut: 'statut',
+  noteAdmin: 'noteAdmin',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SignalementMessagerieScalarFieldEnum = (typeof SignalementMessagerieScalarFieldEnum)[keyof typeof SignalementMessagerieScalarFieldEnum]
+
+
+export const UserBlockScalarFieldEnum = {
+  blockerId: 'blockerId',
+  blockedId: 'blockedId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserBlockScalarFieldEnum = (typeof UserBlockScalarFieldEnum)[keyof typeof UserBlockScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -141,20 +311,19 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 export const JsonNullValueFilter = {
@@ -164,4 +333,12 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

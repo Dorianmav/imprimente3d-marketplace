@@ -1,12 +1,14 @@
 <script setup lang="ts">
 const toast = useToast();
 const loading = ref(false);
-const { signup } = useAuth();
+const { signup, user } = useAuth();
 
 async function handleSignUp(data: { prenom: string; nom: string; email: string; password: string; typeCompte: string }) {
   loading.value = true;
   try {
-    await signup(data.prenom, data.nom, data.email, data.password, data.typeCompte);
+    const res = await signup(data.prenom, data.nom, data.email, data.password, data.typeCompte);
+    user.value = res.user;
+    //TODO: revoir les toasts pour qu'ils soient plus explicites et utiles pour l'utilisateur
     toast.add({ title: 'Success', description: 'Account created successfully', color: 'success' });
     await navigateTo('/dashboard');
   } catch (err) {

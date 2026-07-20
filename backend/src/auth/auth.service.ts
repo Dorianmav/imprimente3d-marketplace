@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -34,23 +33,23 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email: signupDto.email,
-        password: passwordHash,
-        name: signupDto.name,
+        passwordHash,
+        nom: signupDto.nom,
+        prenom: signupDto.prenom,
+        typeCompte: signupDto.typeCompte ?? 'particulier',
       },
     });
 
-    const savedUser = await this.prisma.user.update({
-      where: { id: user.id },
-      data: user,
-    });
-    const tokens = await this.generateTokens(savedUser);
-    await this.updateRefreshToken(savedUser.id, tokens.refreshToken);
+    const tokens = await this.generateTokens(user);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     return {
       user: {
-        id: savedUser.id,
-        email: savedUser.email,
-        name: savedUser.name,
+        id: user.id,
+        email: user.email,
+        nom: user.nom,
+        prenom: user.prenom,
+        typeCompte: user.typeCompte,
       },
       ...tokens,
     };
@@ -67,7 +66,7 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
-      user.password,
+      user.passwordHash,
     );
 
     if (!isPasswordValid) {
@@ -81,7 +80,9 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        nom: user.nom,
+        prenom: user.prenom,
+        typeCompte: user.typeCompte,
       },
       ...tokens,
     };
@@ -124,6 +125,14 @@ export class AuthService {
         throw new UnauthorizedException('Access denied');
       }
 
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Access denied');
+      }
+
       return this.refreshTokens(payload.sub, refreshToken);
     } catch (error) {
       throw new UnauthorizedException('Access denied');
@@ -133,7 +142,7 @@ export class AuthService {
   async logout(userId: string) {
     await this.prisma.user.update({
       where: { id: userId },
-      data: { refreshToken: '' },
+      data: { refreshToken: null },
     });
   }
 
@@ -154,29 +163,9 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
-      name: user.name,
-      tokens: {
-        accessToken: await this.jwtService.signAsync(
-          { sub: user.id, email: user.email },
-          {
-            secret: this.configService.get<string>('JWT_SECRET'),
-            expiresIn: this.configService.get<string>(
-              'JWT_EXPIRATION',
-              '15m',
-            ) as StringValue,
-          },
-        ),
-        refreshToken: await this.jwtService.signAsync(
-          { sub: user.id, email: user.email },
-          {
-            secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-            expiresIn: this.configService.get<string>(
-              'JWT_REFRESH_EXPIRATION',
-              '7d',
-            ) as StringValue,
-          },
-        ),
-      },
+      nom: user.nom,
+      prenom: user.prenom,
+      typeCompte: user.typeCompte,
     };
   }
 

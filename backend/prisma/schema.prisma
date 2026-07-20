@@ -159,6 +159,7 @@ model User {
   signalements SignalementMessagerie[]
   blocksInitiated UserBlock[] @relation("Blocker")
   blocksReceived  UserBlock[] @relation("Blocked")
+  refreshToken String?
 }
 
 //////////////////////

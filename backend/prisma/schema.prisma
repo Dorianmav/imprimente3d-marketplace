@@ -1,6 +1,11 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
 generator client {
   provider     = "prisma-client-js"
-  output       = "../src/generated/prisma/client"
+  output       = "../src/generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -8,236 +13,9 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id                       String                    @id @default(cuid())
-  email                    String                    @unique
-  passwordHash             String
-  nom                      String
-  prenom                   String
-  typeCompte               TypeCompte
-  avatar                   String?
-  localisation             Json?
-  stripeCustomerId         String?
-  stripeAccountId          String?
-  stripeOnboardingComplete Boolean                   @default(false)
-  noteMoyenne              Float                     @default(0)
-  nbAvis                   Int                       @default(0)
-  siret                    String?
-  numeroTva                String?
-  nomCommercial            String?
-  adresseFacturation       String?
-  stripeBusinessType       String?
-  createdAt                DateTime                  @default(now())
-  updatedAt                DateTime                  @updatedAt
-  refreshToken             String?
-  isVerified               Boolean                   @default(false)
-  resetCode                String?
-  resetCodeExpiry          DateTime?
-  verificationCode         String?
-  verificationCodeExpiry   DateTime?
-  annoncesDemande          AnnonceDemande[]          @relation("AcheteurDemandes")
-  annoncesVente            AnnonceVente[]            @relation("VendeurAnnonces")
-  avisDonnes               Avis[]                    @relation("AuteurAvis")
-  avisRecus                Avis[]                    @relation("CibleAvis")
-  commandesAcheteur        Commande[]                @relation("AcheteurCommandes")
-  commandesVendeur         Commande[]                @relation("VendeurCommandes")
-  conversations            ConversationParticipant[]
-  devis                    Devis[]
-  imprimeurProfil          ImprimeurProfil?
-  messages                 Message[]
-  offres                   OffreMessagerie[]
-  signalements             SignalementMessagerie[]
-  blocksReceived           UserBlock[]               @relation("Blocked")
-  blocksInitiated          UserBlock[]               @relation("Blocker")
-}
-
-model ImprimeurProfil {
-  userId           String     @id
-  bio              String?
-  imprimantes      Json
-  materiaux        Materiau[]
-  localisation     Json
-  zoneExpedition   String?
-  delaiMoyenJours  Int
-  tarifsIndicatifs Json
-  disponible       Boolean    @default(true)
-  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model AnnonceVente {
-  id             String             @id @default(cuid())
-  vendeurId      String
-  titre          String
-  description    String
-  categorie      CategorieAnnonce
-  materiau       Materiau
-  couleur        String
-  photos         String[]
-  prixProduit    Int
-  modeLivraison  ModeLivraison
-  fraisLivraison Int
-  stock          Int?
-  statut         StatutAnnonceVente @default(ACTIVE)
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  vendeur        User               @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
-}
-
-model AnnonceDemande {
-  id               String               @id @default(cuid())
-  acheteurId       String
-  titre            String
-  description      String?
-  fichier3d        String?
-  photosReference  String[]
-  budgetMax        Int?
-  materiauSouhaite Materiau?
-  couleurSouhaitee String?
-  quantite         Int                  @default(1)
-  statut           StatutAnnonceDemande @default(OUVERTE)
-  dateExpiration   DateTime
-  createdAt        DateTime             @default(now())
-  acheteur         User                 @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
-  devis            Devis[]
-}
-
-model Devis {
-  id              String         @id @default(cuid())
-  demandeId       String
-  imprimeurId     String
-  prixProduit     Int
-  fraisLivraison  Int
-  delaiJours      Int
-  materiauPropose Materiau
-  couleurProposee String
-  message         String?
-  statut          StatutDevis    @default(EN_ATTENTE)
-  createdAt       DateTime       @default(now())
-  demande         AnnonceDemande @relation(fields: [demandeId], references: [id])
-  imprimeur       User           @relation(fields: [imprimeurId], references: [id])
-
-  @@unique([demandeId, imprimeurId])
-}
-
-model Commande {
-  id                     String         @id @default(cuid())
-  acheteurId             String
-  vendeurId              String
-  sourceType             SourceCommande
-  sourceId               String
-  montantProduit         Int
-  fraisLivraison         Int
-  commissionPct          Float          @default(3)
-  commissionFixe         Int            @default(80)
-  commissionTotale       Int
-  montantTotalAcheteur   Int
-  stripePaymentIntentId  String?
-  stripeTransferId       String?
-  statut                 StatutCommande @default(EN_ATTENTE_PAIEMENT)
-  trackingInfo           String?
-  dateExpedition         DateTime?
-  dateLivraisonConfirmee DateTime?
-  dateLiberationAuto     DateTime?
-  facturePdfKey          String?
-  createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
-  avis                   Avis?
-  acheteur               User           @relation("AcheteurCommandes", fields: [acheteurId], references: [id])
-  vendeur                User           @relation("VendeurCommandes", fields: [vendeurId], references: [id])
-}
-
-model Avis {
-  id          String   @id @default(cuid())
-  commandeId  String   @unique
-  auteurId    String
-  cibleId     String
-  note        Int
-  commentaire String?
-  type        TypeAvis
-  createdAt   DateTime @default(now())
-  auteur      User     @relation("AuteurAvis", fields: [auteurId], references: [id])
-  cible       User     @relation("CibleAvis", fields: [cibleId], references: [id])
-  commande    Commande @relation(fields: [commandeId], references: [id])
-}
-
-model Conversation {
-  id                     String                    @id @default(cuid())
-  annonceType            ConversationAnnonceType?
-  annonceId              String?
-  createdAt              DateTime                  @default(now())
-  participants           ConversationParticipant[]
-  messages               Message[]
-  offres                 OffreMessagerie[]
-  signalementMessageries SignalementMessagerie[]
-}
-
-model ConversationParticipant {
-  conversationId String
-  userId         String
-  dernierLuAt    DateTime?
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([conversationId, userId])
-}
-
-model Message {
-  id                     String                  @id @default(cuid())
-  conversationId         String
-  expediteurId           String
-  type                   MessageType
-  contenu                String?
-  offreId                String?
-  piecesJointes          String[]
-  createdAt              DateTime                @default(now())
-  conversation           Conversation            @relation(fields: [conversationId], references: [id])
-  expediteur             User                    @relation(fields: [expediteurId], references: [id])
-  offre                  OffreMessagerie?        @relation(fields: [offreId], references: [id])
-  signalementMessageries SignalementMessagerie[]
-}
-
-model OffreMessagerie {
-  id             String            @id @default(cuid())
-  conversationId String
-  expediteurId   String
-  annonceType    OffreAnnonceType
-  annonceId      String
-  montant        Int
-  fraisLivraison Int
-  statut         StatutOffre       @default(EN_ATTENTE)
-  parentOffreId  String?
-  createdAt      DateTime          @default(now())
-  messages       Message[]
-  conversation   Conversation      @relation(fields: [conversationId], references: [id])
-  expediteur     User              @relation(fields: [expediteurId], references: [id])
-  parent         OffreMessagerie?  @relation("ContreOffre", fields: [parentOffreId], references: [id])
-  contreOffres   OffreMessagerie[] @relation("ContreOffre")
-}
-
-model SignalementMessagerie {
-  id             String            @id @default(cuid())
-  reporterId     String
-  conversationId String
-  messageId      String?
-  motif          String
-  statut         StatutSignalement @default(OUVERT)
-  noteAdmin      String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  conversation   Conversation      @relation(fields: [conversationId], references: [id])
-  message        Message?          @relation(fields: [messageId], references: [id])
-  reporter       User              @relation(fields: [reporterId], references: [id])
-}
-
-model UserBlock {
-  blockerId String
-  blockedId String
-  createdAt DateTime @default(now())
-  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
-  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
-
-  @@id([blockerId, blockedId])
-}
+//////////////////////
+// ENUMS
+//////////////////////
 
 enum TypeCompte {
   particulier
@@ -340,4 +118,278 @@ enum StatutSignalement {
   OUVERT
   EN_COURS
   TRAITE
+}
+
+//////////////////////
+// USERS
+//////////////////////
+
+model User {
+  id                       String                    @id @default(cuid())
+  email                    String                    @unique
+  passwordHash             String
+  nom                      String
+  prenom                   String
+  typeCompte               TypeCompte
+  avatar                   String?
+  localisation             Json?
+  stripeCustomerId         String?
+  stripeAccountId          String?
+  stripeOnboardingComplete Boolean @default(false)
+  noteMoyenne Float @default(0)
+  nbAvis      Int   @default(0)
+  siret              String?
+  numeroTva          String?
+  nomCommercial      String?
+  adresseFacturation String?
+  stripeBusinessType String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  imprimeurProfil ImprimeurProfil?
+  annoncesVente   AnnonceVente[]   @relation("VendeurAnnonces")
+  annoncesDemande AnnonceDemande[] @relation("AcheteurDemandes")
+  devis Devis[]
+  commandesAcheteur Commande[] @relation("AcheteurCommandes")
+  commandesVendeur  Commande[] @relation("VendeurCommandes")
+  avisDonnes Avis[] @relation("AuteurAvis")
+  avisRecus  Avis[] @relation("CibleAvis")
+  conversations ConversationParticipant[]
+  messages Message[]
+  offres OffreMessagerie[]
+  signalements SignalementMessagerie[]
+  blocksInitiated UserBlock[] @relation("Blocker")
+  blocksReceived  UserBlock[] @relation("Blocked")
+  refreshToken String?
+}
+
+//////////////////////
+// IMPRIMEUR
+//////////////////////
+
+model ImprimeurProfil {
+  userId           String     @id
+  bio              String?
+  imprimantes      Json
+  materiaux        Materiau[]
+  localisation     Json
+  zoneExpedition   String?
+  delaiMoyenJours  Int
+  tarifsIndicatifs Json
+  disponible       Boolean    @default(true)
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+//////////////////////
+// ANNONCES VENTE
+//////////////////////
+
+model AnnonceVente {
+  id             String             @id @default(cuid())
+  vendeurId      String
+  titre          String
+  description    String
+  categorie      CategorieAnnonce
+  materiau       Materiau
+  couleur        String
+  photos         String[]
+  prixProduit    Int
+  modeLivraison  ModeLivraison
+  fraisLivraison Int
+  stock          Int?
+  statut         StatutAnnonceVente @default(ACTIVE)
+  vendeur        User               @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+}
+
+//////////////////////
+// DEMANDES
+//////////////////////
+
+model AnnonceDemande {
+  id               String               @id @default(cuid())
+  acheteurId       String
+  titre            String
+  description      String?
+  fichier3d        String?
+  photosReference  String[]
+  budgetMax        Int?
+  materiauSouhaite Materiau?
+  couleurSouhaitee String?
+  quantite         Int                  @default(1)
+  statut           StatutAnnonceDemande @default(OUVERTE)
+  dateExpiration   DateTime
+  acheteur         User                 @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
+  devis            Devis[]
+  createdAt        DateTime             @default(now())
+}
+
+//////////////////////
+// DEVIS
+//////////////////////
+
+model Devis {
+  id              String         @id @default(cuid())
+  demandeId       String
+  imprimeurId     String
+  prixProduit     Int
+  fraisLivraison  Int
+  delaiJours      Int
+  materiauPropose Materiau
+  couleurProposee String
+  message         String?
+  statut          StatutDevis    @default(EN_ATTENTE)
+  demande         AnnonceDemande @relation(fields: [demandeId], references: [id])
+  imprimeur       User           @relation(fields: [imprimeurId], references: [id])
+  createdAt       DateTime       @default(now())
+
+  @@unique([demandeId, imprimeurId])
+}
+
+//////////////////////
+// COMMANDES
+//////////////////////
+
+model Commande {
+  id                     String         @id @default(cuid())
+  acheteurId             String
+  vendeurId              String
+  sourceType             SourceCommande
+  sourceId               String
+  montantProduit         Int
+  fraisLivraison         Int
+  commissionPct          Float          @default(3)
+  commissionFixe         Int            @default(80)
+  commissionTotale       Int
+  montantTotalAcheteur   Int
+  stripePaymentIntentId  String?
+  stripeTransferId       String?
+  statut                 StatutCommande @default(EN_ATTENTE_PAIEMENT)
+  trackingInfo           String?
+  dateExpedition         DateTime?
+  dateLivraisonConfirmee DateTime?
+  dateLiberationAuto     DateTime?
+  facturePdfKey          String?
+  acheteur               User           @relation("AcheteurCommandes", fields: [acheteurId], references: [id])
+  vendeur                User           @relation("VendeurCommandes", fields: [vendeurId], references: [id])
+  avis                   Avis?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+}
+
+//////////////////////
+// AVIS
+//////////////////////
+
+model Avis {
+  id          String   @id @default(cuid())
+  commandeId  String   @unique
+  auteurId    String
+  cibleId     String
+  note        Int
+  commentaire String?
+  type        TypeAvis
+  commande    Commande @relation(fields: [commandeId], references: [id])
+  auteur      User     @relation("AuteurAvis", fields: [auteurId], references: [id])
+  cible       User     @relation("CibleAvis", fields: [cibleId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+//////////////////////
+// CONVERSATIONS
+//////////////////////
+
+model Conversation {
+  id                     String                    @id @default(cuid())
+  annonceType            ConversationAnnonceType?
+  annonceId              String?
+  participants           ConversationParticipant[]
+  messages               Message[]
+  offres                 OffreMessagerie[]
+  createdAt              DateTime                  @default(now())
+  signalementMessageries SignalementMessagerie[]
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+  dernierLuAt    DateTime?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+//////////////////////
+// MESSAGES
+//////////////////////
+
+model Message {
+  id                     String                  @id @default(cuid())
+  conversationId         String
+  expediteurId           String
+  type                   MessageType
+  contenu                String?
+  offreId                String?
+  piecesJointes          String[]
+  conversation           Conversation            @relation(fields: [conversationId], references: [id])
+  expediteur             User                    @relation(fields: [expediteurId], references: [id])
+  offre                  OffreMessagerie?        @relation(fields: [offreId], references: [id])
+  createdAt              DateTime                @default(now())
+  signalementMessageries SignalementMessagerie[]
+}
+
+//////////////////////
+// OFFRES
+//////////////////////
+
+model OffreMessagerie {
+  id             String            @id @default(cuid())
+  conversationId String
+  expediteurId   String
+  annonceType    OffreAnnonceType
+  annonceId      String
+  montant        Int
+  fraisLivraison Int
+  statut         StatutOffre       @default(EN_ATTENTE)
+  parentOffreId  String?
+  parent         OffreMessagerie?  @relation("ContreOffre", fields: [parentOffreId], references: [id])
+  contreOffres   OffreMessagerie[] @relation("ContreOffre")
+  conversation   Conversation      @relation(fields: [conversationId], references: [id])
+  expediteur     User              @relation(fields: [expediteurId], references: [id])
+  createdAt      DateTime          @default(now())
+  messages       Message[]
+}
+
+//////////////////////
+// SIGNALEMENTS
+//////////////////////
+
+model SignalementMessagerie {
+  id             String            @id @default(cuid())
+  reporterId     String
+  conversationId String
+  messageId      String?
+  motif          String
+  statut         StatutSignalement @default(OUVERT)
+  noteAdmin      String?
+  reporter       User              @relation(fields: [reporterId], references: [id])
+  conversation   Conversation      @relation(fields: [conversationId], references: [id])
+  message        Message?          @relation(fields: [messageId], references: [id])
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+//////////////////////
+// BLOCKS
+//////////////////////
+
+model UserBlock {
+  blockerId String
+  blockedId String
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@id([blockerId, blockedId])
 }

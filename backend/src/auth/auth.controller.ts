@@ -1,28 +1,20 @@
 import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  Post,
-  Req,
-  Res,
-  UnauthorizedException,
-  UseGuards,
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Logger,
+    Post,
+    Req,
+    Res,
+    UnauthorizedException,
+    UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
-import {
-  ForgotPasswordDto,
-  LoginDto,
-  RefreshTokenDto,
-  ResendCodeDto,
-  ResetPasswordDto,
-  SignupDto,
-  VerifyAccountDto,
-} from './dto/auth.dto';
+import { LoginDto, RefreshTokenDto, SignupDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -30,20 +22,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() signupDto: SignupDto) {
-    return this.authService.signup(signupDto);
+  async signup(@Body() signupDto: SignupDto, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.signup(signupDto);
+    this.setRefreshTokenCookie(res, result.refreshToken);
+    return result;
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.login(loginDto);
-    if ('refreshToken' in result) {
-      this.setRefreshTokenCookie(res, result.refreshToken);
-    }
+    this.setRefreshTokenCookie(res, result.refreshToken);
     return result;
   }
 
@@ -81,35 +70,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUser('id') userId: string) {
     return this.authService.getProfile(userId);
-  }
-
-  @Post('verify-account')
-  @HttpCode(HttpStatus.OK)
-  async verifyAccount(
-    @Body() dto: VerifyAccountDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const result = await this.authService.verifyAccount(dto);
-    this.setRefreshTokenCookie(res, result.refreshToken);
-    return result;
-  }
-
-  @Post('resend-code')
-  @HttpCode(HttpStatus.OK)
-  async resendCode(@Body() dto: ResendCodeDto) {
-    return this.authService.resendCode(dto);
-  }
-
-  @Post('forgot-password')
-  @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(dto);
-  }
-
-  @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto);
   }
 
   private setRefreshTokenCookie(res: Response, refreshToken: string) {

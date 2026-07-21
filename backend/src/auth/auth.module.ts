@@ -6,12 +6,10 @@ import type { StringValue } from 'ms';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt-strategy.service';
-import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule,
-    MailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

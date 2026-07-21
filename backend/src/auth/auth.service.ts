@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { StringValue } from 'ms';
 import { User } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';

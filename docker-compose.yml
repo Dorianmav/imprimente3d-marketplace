@@ -88,12 +88,17 @@ services:
       NOVU_APP_ID: ${NOVU_APP_ID:-}
       COMMISSION_PCT: ${COMMISSION_PCT:-0.03}
       COMMISSION_FIXED_CENTS: ${COMMISSION_FIXED_CENTS:-80}
+      SMTP_HOST: ${SMTP_HOST:-smtp.mailtrap.io}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-no-reply@marketplace3d.com}
     ports:
       - "3001:3001"
     volumes:
       - ./backend:/app
       - /app/node_modules
-      - /app/dist
+      # - /app/dist
     depends_on:
       postgres:
         condition: service_healthy
@@ -147,6 +152,18 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
       - "traefik.http.routers.traefik.service=api@internal"
+
+  pgadmin:
+    image: elestio/pgadmin:latest
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@root.me
+      - PGADMIN_DEFAULT_PASSWORD=rootroot
+      - PGADMIN_LISTEN_PORT=8888
+    ports:
+    - "8888:8888"
+    volumes:
+    - ./servers.json:/pgadmin4/servers.json
 
 volumes:
   postgres_data:

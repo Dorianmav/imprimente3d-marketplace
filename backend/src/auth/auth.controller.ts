@@ -1,15 +1,15 @@
 import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Logger,
-    Post,
-    Req,
-    Res,
-    UnauthorizedException,
-    UseGuards,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -31,10 +31,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() signupDto: SignupDto, @Res({ passthrough: true }) res: Response) {
-    const result = await this.authService.signup(signupDto);
-    this.setRefreshTokenCookie(res, result.refreshToken);
-    return result;
+  async signup(@Body() signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 
   @Post('login')
@@ -45,7 +43,9 @@ export class AuthController {
   ) {
     // Logger.log(`Attempting login for email: ${loginDto.email}`, 'AuthController');
     const result = await this.authService.login(loginDto);
-    this.setRefreshTokenCookie(res, result.refreshToken);
+    if ('refreshToken' in result) {
+      this.setRefreshTokenCookie(res, result.refreshToken);
+    }
     return result;
   }
 

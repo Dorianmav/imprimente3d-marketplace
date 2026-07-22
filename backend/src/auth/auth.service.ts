@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { StringValue } from 'ms';
 import { User,Prisma } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -27,6 +27,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   private generateCode(): string {
@@ -138,29 +139,16 @@ export class AuthService {
       data: { isVerified: true },
     });
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(
-      loginDto.password,
-      user.passwordHash,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const tokens = await this.generateTokens(user);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    const tokens = await this.generateTokens(verifiedUser);
+    await this.updateRefreshToken(verifiedUser.id, tokens.refreshToken);
 
     return {
       user: {
-        id: user.id,
-        email: user.email,
-        nom: user.nom,
-        prenom: user.prenom,
-        typeCompte: user.typeCompte,
+        id: verifiedUser.id,
+        email: verifiedUser.email,
+        nom: verifiedUser.nom,
+        prenom: verifiedUser.prenom,
+        typeCompte: verifiedUser.typeCompte,
       },
       ...tokens,
     };

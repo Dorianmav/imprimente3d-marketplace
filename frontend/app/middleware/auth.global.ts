@@ -3,8 +3,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     "/",
     "/login",
     "/signup",
-    "/forgot-password",
-    "/reset-password",
+    "/auth/forgot-password",
+    "/auth/verify-account",
+    "/auth/reset-password",
     "/about",
     "/contact",
     "/pricing",
@@ -33,16 +34,35 @@ export default defineNuxtRouteMiddleware(async (to) => {
     "/surveys",
   ];
 
-  if (publicRoutes.includes(to.path)) return;
+  const authOnlyPages = ["/login", "/signup", "/auth/forgot-password", "/auth/verify-account"];
+  const isResetPasswordRoute = to.path.startsWith("/auth/reset-password/");
+  const isVerifyAccountRoute = to.path.startsWith("/auth/verify-account/");
+  const isPublic = publicRoutes.includes(to.path) || isResetPasswordRoute || isVerifyAccountRoute;
 
-  const { accessToken, initAuth } = useAuth();
+  const { user, accessToken, initAuth } = useAuth();
 
-  if (accessToken.value) {
+  if (authOnlyPages.includes(to.path)) {
+    if (accessToken.value && user.value) return navigateTo("/dashboard");
+    try {
+      const restored = await initAuth();
+      if (restored && user.value) return navigateTo("/dashboard");
+    } catch {
+      // reste sur la page publique
+    }
     return;
   }
 
-  const restored = await initAuth();
-  if (!restored) {
-    return navigateTo('/login');
+  if (isPublic) return;
+
+  if (accessToken.value && user.value) return;
+
+  try {
+    const restored = await initAuth();
+    if (!restored || !user.value) {
+      return navigateTo({ path: "/login", query: { redirect: to.fullPath } });
+    }
+  } catch (e: any) {
+    console.error("[middleware] initAuth failed:", e?.cause ?? e?.message ?? e);
+    return navigateTo({ path: "/login", query: { redirect: to.fullPath } });
   }
 });

@@ -13,4 +13,9 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  app: {
+    head: {
+      viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+    },
+  },
 });

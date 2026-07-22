@@ -98,4 +98,4 @@ ios/
 # Nuxt (frontend)
 .nuxt/
 .output/
-.data/
+.data/src/generated/

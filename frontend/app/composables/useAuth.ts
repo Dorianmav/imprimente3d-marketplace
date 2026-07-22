@@ -1,9 +1,25 @@
+async function fetchWithRetry<T>(
+  fn: () => Promise<T>,
+  retries = 2,
+  delay = 300,
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (e: any) {
+    if (retries > 0 && !e?.response) {
+      await new Promise((r) => setTimeout(r, delay));
+      return fetchWithRetry(fn, retries - 1, delay);
+    }
+    throw e;
+  }
+}
+
 interface User {
   id: string;
   email: string;
   nom: string;
   prenom: string;
-  typeCompte: 'particulier' | 'pro';
+  typeCompte: "particulier" | "pro";
 }
 
 interface AuthResponse {
@@ -11,124 +27,169 @@ interface AuthResponse {
   accessToken: string;
 }
 
+let refreshInFlight: Promise<boolean> | null = null;
+
 export function useAuth() {
-  const user = useState<User | null>('auth.user', () => null);
-  const accessToken = useCookie<string | null>('accessToken', {
+  const user = useState<User | null>("auth.user", () => null);
+  const accessToken = useCookie<string | null>("accessToken", {
     default: () => null,
     maxAge: 60 * 15,
-    sameSite: 'lax',
+    sameSite: "lax",
   });
-
   const config = useRuntimeConfig();
 
-  async function login(email: string, password: string) {
-    const res = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/login`, {
-      method: 'POST',
-      credentials: 'include',
-      body: { email, password },
-    });
-
-    accessToken.value = res.accessToken;
-    user.value = res.user;
-
-    return res;
+  function getHeaders(): Record<string, string> {
+    if (import.meta.server) {
+      return useRequestHeaders(["cookie"]) as Record<string, string>;
+    }
+    return {};
   }
 
-  async function signup(prenom: string, nom: string, email: string, password: string, typeCompte: string) {
-    const res = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/signup`, {
-      method: 'POST',
-      credentials: 'include',
-      body: { prenom, nom, email, password, typeCompte },
-    });
+  async function refreshSession(headers?: Record<string, string>) {
+    if (refreshInFlight) return refreshInFlight;
 
-    accessToken.value = res.accessToken;
-    user.value = res.user;
+    const h = headers ?? getHeaders();
+    refreshInFlight = (async () => {
+      try {
+        const res = await fetchWithRetry(() =>
+          $fetch<{ accessToken: string }>(
+            `${config.public.apiBase}/auth/refresh`,
+            { method: "POST", credentials: "include", headers: h, timeout: 5000 },
+          ),
+        );
+        accessToken.value = res.accessToken;
+        return true;
+      } catch (e: any) {
+        const status = e?.response?.status ?? e?.status;
+        if (status !== 401) {
+          console.error("[useAuth] refreshSession failed:", e?.cause ?? e?.message ?? e);
+        }
+        accessToken.value = null;
+        user.value = null;
+        return false;
+      }
+    })();
 
-    return res;
-  }
-
-  async function refreshSession() {
     try {
-      const res = await $fetch<{ accessToken: string }>(`${config.public.apiBase}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      return await refreshInFlight;
+    } finally {
+      refreshInFlight = null;
+    }
+  }
 
-      accessToken.value = res.accessToken;
-      return true;
-    } catch {
-      accessToken.value = null;
-      user.value = null;
-      return false;
+  async function fetchProfile(headers?: Record<string, string>) {
+    const h = headers ?? getHeaders();
+
+    if (!accessToken.value) {
+      const refreshed = await refreshSession(h);
+      if (!refreshed) throw new Error("No active session");
+    }
+
+    const fetchProfileRequest = () =>
+      fetchWithRetry(() =>
+        $fetch<User>(`${config.public.apiBase}/auth/me`, {
+          credentials: "include",
+          headers: { ...h, Authorization: `Bearer ${accessToken.value}` },
+          timeout: 5000,
+        }),
+      );
+
+    try {
+      const res = await fetchProfileRequest();
+      if (!res || !res.id) {
+        user.value = null;
+        throw new Error("Empty profile response");
+      }
+      user.value = res;
+      return res;
+    } catch (error: any) {
+      if (error?.response?.status !== 401) {
+        console.error("[useAuth] fetchProfile non-401 failure:", error?.cause ?? error?.message ?? error);
+        throw error;
+      }
+
+      const refreshed = await refreshSession(h);
+      if (!refreshed) throw error;
+
+      const res = await fetchProfileRequest();
+      if (!res || !res.id) {
+        user.value = null;
+        throw new Error("Empty profile response after refresh");
+      }
+      user.value = res;
+      return res;
     }
   }
 
   async function initAuth() {
+    const h = getHeaders();
+
     if (accessToken.value) {
       try {
-        await fetchProfile();
-        return true;
+        await fetchProfile(h);
+        return !!user.value;
       } catch {
-        return refreshSession();
+        const refreshed = await refreshSession(h);
+        if (!refreshed) return false;
       }
+    } else {
+      const refreshed = await refreshSession(h);
+      if (!refreshed) return false;
     }
 
-    return refreshSession();
+    try {
+      await fetchProfile(h);
+      return !!user.value;
+    } catch {
+      return false;
+    }
+  }
+
+  async function login(email: string, password: string) {
+    const res = await $fetch<AuthResponse>(
+      `${config.public.apiBase}/auth/login`,
+      { method: "POST", credentials: "include", body: { email, password } },
+    );
+    accessToken.value = res.accessToken;
+    user.value = res.user;
+    return res;
+  }
+
+  async function signup(
+    prenom: string,
+    nom: string,
+    email: string,
+    password: string,
+    typeCompte: string,
+  ) {
+    const res = await $fetch<AuthResponse>(
+      `${config.public.apiBase}/auth/signup`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: { prenom, nom, email, password, typeCompte },
+      },
+    );
+    accessToken.value = res.accessToken;
+    user.value = res.user;
+    return res;
   }
 
   async function logout() {
     try {
       if (accessToken.value) {
         await $fetch(`${config.public.apiBase}/auth/logout`, {
-          method: 'POST',
-          credentials: 'include',
+          method: "POST",
+          credentials: "include",
           headers: { Authorization: `Bearer ${accessToken.value}` },
         });
       }
     } catch {
-      // ignore logout errors and still clear local state
+      // ignore
     }
-
     accessToken.value = null;
     user.value = null;
-
-    if (import.meta.client) {
-      await navigateTo('/login');
-    }
-  }
-
-  async function fetchProfile() {
-    if (!accessToken.value) {
-      const refreshed = await refreshSession();
-      if (!refreshed) {
-        throw new Error('No active session');
-      }
-    }
-
-    const fetchProfileRequest = () =>
-      $fetch<User>(`${config.public.apiBase}/auth/me`, {
-        credentials: 'include',
-        headers: { Authorization: `Bearer ${accessToken.value}` },
-      });
-
-    try {
-      const res = await fetchProfileRequest();
-      user.value = res;
-      return res;
-    } catch (error: any) {
-      if (error?.response?.status !== 401) {
-        throw error;
-      }
-
-      const refreshed = await refreshSession();
-      if (!refreshed) {
-        throw error;
-      }
-
-      const res = await fetchProfileRequest();
-      user.value = res;
-      return res;
-    }
+    if (import.meta.client) await navigateTo("/login");
   }
 
   return {

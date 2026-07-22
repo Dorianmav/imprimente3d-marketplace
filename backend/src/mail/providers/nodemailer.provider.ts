@@ -11,7 +11,6 @@ export class NodemailerProvider implements MailProvider {
   private transporter: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
-    Logger.log('NodemailerProvider initialized with config:', this.configService.get<string>('SMTP_SECURE'))
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('SMTP_HOST'),
       port: this.configService.get<number>('SMTP_PORT'),

@@ -49,6 +49,7 @@ model User {
   signalements             SignalementMessagerie[]
   blocksReceived           UserBlock[]               @relation("Blocked")
   blocksInitiated          UserBlock[]               @relation("Blocker")
+  deletedAt                DateTime?
 }
 
 model ImprimeurProfil {

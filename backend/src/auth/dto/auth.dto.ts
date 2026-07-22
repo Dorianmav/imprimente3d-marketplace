@@ -1,4 +1,12 @@
-import { IsEmail, IsString, MinLength, MaxLength, IsOptional, IsEnum, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsOptional,
+  IsEnum,
+  Length,
+} from 'class-validator';
 
 export class SignupDto {
   @IsEmail()
@@ -39,12 +47,8 @@ export class RefreshTokenDto {
 }
 
 export class VerifyAccountDto {
-  @IsEmail()
-  email: string;
-
   @IsString()
-  @Length(6, 6)
-  code: string;
+  token: string;
 }
 
 export class ResendCodeDto {
@@ -58,14 +62,15 @@ export class ForgotPasswordDto {
 }
 
 export class ResetPasswordDto {
-  @IsEmail()
-  email: string;
-
   @IsString()
-  @Length(6, 6)
-  code: string;
+  token: string;
 
   @IsString()
   @MinLength(8)
   newPassword: string;
+}
+
+export class DeleteAccountDto {
+  @IsString()
+  password: string;
 }

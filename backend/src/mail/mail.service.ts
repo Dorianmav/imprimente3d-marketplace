@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MailProvider } from './interfaces/mail-provider.interface';
 import { MAIL_PROVIDER } from './mail.constants';
 
@@ -6,21 +6,26 @@ import { MAIL_PROVIDER } from './mail.constants';
 export class MailService {
   constructor(@Inject(MAIL_PROVIDER) private readonly provider: MailProvider) {}
 
-  async sendVerificationCode(to: string, code: string): Promise<void> {
+  private readonly frontendUrl =
+    process.env.FRONTEND_URL || 'http://localhost:3000';
+
+  async sendVerificationLink(to: string, token: string): Promise<void> {
+    const link = `${process.env.APP_URL}/auth/verify-account/${token}`;
     await this.provider.send({
       to,
       subject: 'Vérification de votre compte',
-      html: `<p>Votre code de vérification : <strong>${code}</strong></p><p>Expire dans 15 minutes.</p>`,
-      text: `Votre code de vérification : ${code}`,
+      html: `<p><a href="${link}">Vérifier mon compte</a></p><p>Expire dans 15 minutes.</p>`,
+      text: `Vérifier: ${link}`,
     });
   }
 
-  async sendPasswordResetCode(to: string, code: string): Promise<void> {
+  async sendPasswordResetLink(to: string, token: string): Promise<void> {
+    const link = `${process.env.APP_URL}/auth/reset-password/${token}`;
     await this.provider.send({
       to,
       subject: 'Réinitialisation de mot de passe',
-      html: `<p>Votre code de réinitialisation : <strong>${code}</strong></p><p>Expire dans 15 minutes.</p>`,
-      text: `Votre code de réinitialisation : ${code}`,
+      html: `<p><a href="${link}">Réinitialiser mon mot de passe</a></p><p>Expire dans 15 minutes.</p>`,
+      text: `Réinitialiser: ${link}`,
     });
   }
 }

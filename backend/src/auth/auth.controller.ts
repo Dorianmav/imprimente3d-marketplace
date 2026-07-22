@@ -15,6 +15,7 @@ import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import {
+  DeleteAccountDto,
   ForgotPasswordDto,
   LoginDto,
   RefreshTokenDto,
@@ -40,6 +41,7 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    Logger.log(`Attempting login for email: ${loginDto.email}`, 'AuthController');
     const result = await this.authService.login(loginDto);
     if ('refreshToken' in result) {
       this.setRefreshTokenCookie(res, result.refreshToken);
@@ -54,7 +56,6 @@ export class AuthController {
     @Body() body: RefreshTokenDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    Logger.log('Refreshing tokens...', body);
     const refreshToken = req.cookies?.refreshToken || body?.refreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
@@ -80,6 +81,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUser('id') userId: string) {
+    Logger.log(`Fetching profile for user ID: ${userId}`, 'AuthController');
     return this.authService.getProfile(userId);
   }
 
@@ -103,6 +105,7 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    Logger.log(`Processing forgot password for email: ${dto.email}`, 'AuthController');
     return this.authService.forgotPassword(dto);
   }
 
@@ -110,6 +113,25 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
+  }
+
+  @Post('delete-account')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async deleteAccount(
+    @CurrentUser('id') userId: string,
+    @Body() dto: DeleteAccountDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.deleteAccount(userId, dto);
+    res.clearCookie('refreshToken');
+    return result;
+  }
+
+  @Get('my-data')
+  @UseGuards(JwtAuthGuard)
+  async getUserData(@CurrentUser('id') userId: string) {
+    return this.authService.getUserData(userId);
   }
 
   private setRefreshTokenCookie(res: Response, refreshToken: string) {

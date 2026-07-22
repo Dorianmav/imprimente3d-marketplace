@@ -9,10 +9,10 @@ async function handleSignUp(data: { prenom: string; nom: string; email: string; 
     const res = await signup(data.prenom, data.nom, data.email, data.password, data.typeCompte);
     user.value = res.user;
     //TODO: revoir les toasts pour qu'ils soient plus explicites et utiles pour l'utilisateur
-    toast.add({ title: 'Success', description: 'Account created successfully', color: 'success' });
-    await navigateTo('/dashboard');
+    toast.add({ title: 'Success', description: 'Compte créé avec succès, vérifiez votre email', color: 'success' });
+    await navigateTo('/login');
   } catch (err) {
-    toast.add({ title: 'Error', description: 'Failed to create account', color: 'error' });
+    toast.add({ title: 'Error', description: 'Échec de la création du compte', color: 'error' });
   } finally {
     loading.value = false;
   }

@@ -3,16 +3,35 @@ const toast = useToast();
 const loading = ref(false);
 const { login, user } = useAuth();
 
+const route = useRoute();
+
 async function handleLogin(data: { email: string; password: string }) {
   loading.value = true;
   try {
     const res = await login(data.email, data.password);
     user.value = res.user;
-    //TODO: revoir les toasts pour qu'ils soient plus explicites et utiles pour l'utilisateur
-    toast.add({ title: 'Success', description: 'Logged in successfully', color: 'success' });
-    await navigateTo('/dashboard');
+
+    if (user.requiresVerification) {
+      toast.add({
+        title: "Warn",
+        description: "Merci de vérifier votre email avant de vous connecter.",
+        color: "warning",
+      });
+    } else {
+      toast.add({
+        title: "Success",
+        description: "Logged in successfully",
+        color: "success",
+      });
+    }
+    const redirect = (route.query.redirect as string) || "/dashboard";
+    await navigateTo(redirect);
   } catch (err) {
-    toast.add({ title: 'Error', description: 'Invalid credentials', color: 'error' });
+    toast.add({
+      title: "Error",
+      description: "Invalid credentials",
+      color: "error",
+    });
   } finally {
     loading.value = false;
   }

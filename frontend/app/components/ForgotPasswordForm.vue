@@ -22,22 +22,35 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <UCard class="w-full max-w-md mx-auto">
+  <UCard
+    :ui="{
+      root: 'w-full max-w-md mx-auto rounded-2xl shadow-xl ring ring-default border-l-4 border-emerald-500 overflow-hidden'
+    }"
+  >
     <template #header>
-      <h2 class="text-xl font-semibold">Mot de passe oublié</h2>
-      <p class="text-sm text-muted mt-1">
+      <p class="text-xs font-medium uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+        Récupération
+      </p>
+      <h2 class="text-2xl font-bold tracking-tight mt-1">Mot de passe oublié</h2>
+      <p class="text-sm text-muted mt-1.5">
         Un code de réinitialisation vous sera envoyé par email.
       </p>
     </template>
 
     <UForm :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
       <UFormField label="Email" name="email">
-        <UInput v-model="state.email" icon="i-lucide-mail" class="w-full" placeholder="vous@exemple.com" />
+        <UInput v-model="state.email" size="lg" icon="i-lucide-mail" class="w-full" placeholder="vous@exemple.com" />
       </UFormField>
 
-      <UButton type="submit" :loading="loading" block>
+      <UButton type="submit" :loading="loading" size="lg" block class="font-medium">
         Envoyer le code
       </UButton>
+
+      <p class="text-center text-sm text-muted">
+        <ULink to="/login" class="font-medium text-emerald-600 dark:text-emerald-400 hover:underline">
+          Retour à la connexion
+        </ULink>
+      </p>
     </UForm>
   </UCard>
 </template>

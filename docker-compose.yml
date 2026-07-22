@@ -81,8 +81,8 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
       MINIO_BUCKET: ${MINIO_BUCKET:-marketplace3d}
-      APP_URL: ${APP_URL:-http://localhost:3000}
-      API_URL: ${API_URL:-http://localhost:3001}
+      APP_URL: ${APP_URL:-https://mktp.amirtalbi.fr}
+      API_URL: ${API_URL:-https://mktp.amirtalbi.fr/api}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       NOVU_API_KEY: ${NOVU_API_KEY:-}
       NOVU_APP_ID: ${NOVU_APP_ID:-}
@@ -93,12 +93,9 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       MAIL_FROM: ${MAIL_FROM}
-    ports:
-      - "3001:3001"
     volumes:
       - ./backend:/app
       - /app/node_modules
-      # - /app/dist
     depends_on:
       postgres:
         condition: service_healthy
@@ -107,6 +104,18 @@ services:
       minio:
         condition: service_healthy
     command: sh -c "npx prisma migrate deploy && npx prisma generate && npm run start:dev"
+    networks:
+      - default
+      - infra-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=infra-network"
+      - "traefik.http.routers.mkpl-backend.rule=Host(`mktp.amirtalbi.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.mkpl-backend.entrypoints=websecure"
+      - "traefik.http.routers.mkpl-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mkpl-backend.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.mkpl-backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.mkpl-backend.middlewares=mkpl-backend-stripprefix"
 
   # --- Frontend Nuxt (dev server) ---
   frontend:
@@ -116,10 +125,8 @@ services:
     container_name: mkpl-frontend
     restart: unless-stopped
     environment:
-      NUXT_PUBLIC_API_BASE: ${API_URL:-http://localhost:3001}
+      NUXT_PUBLIC_API_BASE: ${API_URL:-https://mktp.amirtalbi.fr/api}
       NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
-    ports:
-      - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -127,31 +134,16 @@ services:
     depends_on:
       - backend
     command: npm run dev
-
-  # --- Traefik (reverse proxy) ---
-  traefik:
-    image: traefik:latest
-    container_name: mkpl-traefik
-    restart: unless-stopped
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_certs:/letsencrypt
+    networks:
+      - default
+      - infra-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.docker.network=infra-network"
+      - "traefik.http.routers.mkpl-frontend.rule=Host(`mktp.amirtalbi.fr`)"
+      - "traefik.http.routers.mkpl-frontend.entrypoints=websecure"
+      - "traefik.http.routers.mkpl-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mkpl-frontend.loadbalancer.server.port=3000"
 
   pgadmin:
     image: elestio/pgadmin:latest
@@ -161,12 +153,15 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=rootroot
       - PGADMIN_LISTEN_PORT=8888
     ports:
-    - "8888:8888"
+      - "8888:8888"
     volumes:
-    - ./servers.json:/pgadmin4/servers.json
+      - ./servers.json:/pgadmin4/servers.json
 
 volumes:
   postgres_data:
   redis_data:
   minio_data:
-  traefik_certs:
+
+networks:
+  infra-network:
+    external: true

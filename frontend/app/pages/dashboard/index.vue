@@ -51,6 +51,7 @@ async function handleLogout() {
           icon="i-tabler-trash"
           class="text-red-500 hover:text-red-600"
           variant="ghost"
+          color="error"
           aria-label="Supprimer le compte"
           @click="isDeleteModalOpen = true"
         />
@@ -83,7 +84,7 @@ async function handleLogout() {
                     >Annuler</UButton
                   >
                   <UButton
-                    color="red"
+                    color="error"
                     :loading="deleteLoading"
                     @click="handleDeleteAccount"
                   >
@@ -105,7 +106,7 @@ async function handleLogout() {
           {{ user.nom }}
         </p>
         <p><span class="font-semibold">Compte :</span> {{ user.typeCompte }}</p>
-        <UButton class="mt-4 w-full" color="primary" @click="handleLogout"
+        <UButton class="mt-4 w-full" color="error" @click="handleLogout"
           >Se déconnecter</UButton
         >
       </div>

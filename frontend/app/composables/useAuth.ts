@@ -20,12 +20,22 @@ interface User {
   nom: string;
   prenom: string;
   typeCompte: "particulier" | "pro";
+  isVerified: boolean;
 }
 
-interface AuthResponse {
+interface AuthSuccessResponse {
   user: User;
   accessToken: string;
+  requiresVerification?: false;
 }
+
+interface VerificationRequiredResponse {
+  requiresVerification: true;
+  message: string;
+  email: string;
+}
+
+type AuthResponse = AuthSuccessResponse | VerificationRequiredResponse;
 
 let refreshInFlight: Promise<boolean> | null = null;
 
@@ -150,8 +160,12 @@ export function useAuth() {
       `${config.public.apiBase}/auth/login`,
       { method: "POST", credentials: "include", body: { email, password } },
     );
-    accessToken.value = res.accessToken;
-    user.value = res.user;
+
+    if (!res.requiresVerification) {
+      accessToken.value = res.accessToken;
+      user.value = res.user;
+    }
+
     return res;
   }
 
@@ -170,8 +184,13 @@ export function useAuth() {
         body: { prenom, nom, email, password, typeCompte },
       },
     );
-    accessToken.value = res.accessToken;
-    user.value = res.user;
+
+    if (!res.requiresVerification) {
+      accessToken.value = res.accessToken;
+      user.value = res.user;
+    }
+
+
     return res;
   }
 

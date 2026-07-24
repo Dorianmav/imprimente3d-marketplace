@@ -9,21 +9,21 @@ async function handleLogin(data: { email: string; password: string }) {
   loading.value = true;
   try {
     const res = await login(data.email, data.password);
-    user.value = res.user;
-
-    if (user.requiresVerification) {
+    if (res.requiresVerification) {
       toast.add({
         title: "Warn",
         description: "Merci de vérifier votre email avant de vous connecter.",
         color: "warning",
       });
-    } else {
-      toast.add({
-        title: "Success",
-        description: "Logged in successfully",
-        color: "success",
-      });
+      return;
     }
+
+    user.value = res.user;
+    toast.add({
+      title: "Success",
+      description: "Logged in successfully",
+      color: "success",
+    });
     const redirect = (route.query.redirect as string) || "/dashboard";
     await navigateTo(redirect);
   } catch (err) {

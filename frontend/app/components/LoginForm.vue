@@ -60,7 +60,7 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
 
       <p class="text-center text-sm text-muted">
         Pas encore de compte ?
-        <ULink to="/auth/register" class="font-medium text-emerald-600 dark:text-emerald-400 hover:underline">
+        <ULink to="/signup" class="font-medium text-emerald-600 dark:text-emerald-400 hover:underline">
           Créer un compte
         </ULink>
       </p>

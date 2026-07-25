@@ -18,7 +18,7 @@ model User {
   avatar                   String?
   localisation             Json?
   stripeCustomerId         String?
-  stripeAccountId          String?
+  stripeAccountId          String?                   @unique
   stripeOnboardingComplete Boolean                   @default(false)
   noteMoyenne              Float                     @default(0)
   nbAvis                   Int                       @default(0)
@@ -57,12 +57,17 @@ model ImprimeurProfil {
   bio              String?
   imprimantes      Json
   materiaux        Materiau[]
-  localisation     Json
   zoneExpedition   String?
   delaiMoyenJours  Int
-  tarifsIndicatifs Json
+  tarifsIndicatifs Json?
   disponible       Boolean    @default(true)
   user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StripeWebhookEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
 }
 
 model AnnonceVente {

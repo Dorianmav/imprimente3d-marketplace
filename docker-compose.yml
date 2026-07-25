@@ -81,7 +81,7 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
       MINIO_BUCKET: ${MINIO_BUCKET:-marketplace3d}
-      APP_URL: ${APP_URL:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       API_URL: ${API_URL:-http://localhost:3001}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       NOVU_API_KEY: ${NOVU_API_KEY:-}
@@ -116,7 +116,8 @@ services:
     container_name: mkpl-frontend
     restart: unless-stopped
     environment:
-      NUXT_PUBLIC_API_BASE: ${API_URL:-http://localhost:3001}
+      NUXT_PUBLIC_API_BASE: http://localhost:3001
+      API_BASE_SERVER: http://backend:3001
       NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
     ports:
       - "3000:3000"
@@ -161,9 +162,9 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=rootroot
       - PGADMIN_LISTEN_PORT=8888
     ports:
-    - "8888:8888"
+      - "8888:8888"
     volumes:
-    - ./servers.json:/pgadmin4/servers.json
+      - ./servers.json:/pgadmin4/servers.json
 
 volumes:
   postgres_data:

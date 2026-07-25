@@ -300,6 +300,8 @@ export class AuthService {
       nom: user.nom,
       prenom: user.prenom,
       typeCompte: user.typeCompte,
+      isVerified: user.isVerified,
+      stripeOnboardingComplete: user.stripeOnboardingComplete,
     };
   }
 

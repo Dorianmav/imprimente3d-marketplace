@@ -41,7 +41,7 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // Logger.log(`Attempting login for email: ${loginDto.email}`, 'AuthController');
+    Logger.log(`Attempting login for email: ${loginDto.email}`, 'AuthController');
     const result = await this.authService.login(loginDto);
     if ('refreshToken' in result) {
       this.setRefreshTokenCookie(res, result.refreshToken);

@@ -3,6 +3,10 @@ const { user, accessToken, logout } = useAuth();
 const config = useRuntimeConfig();
 const toast = useToast();
 
+definePageMeta({
+  layout: 'default',
+})
+
 if (!user.value) {
   await navigateTo("/login");
 }
@@ -34,6 +38,40 @@ async function handleDeleteAccount() {
   }
 }
 
+async function startStripeOnboarding() {
+  const { url } = await $fetch(
+    `${config.public.apiBase}/stripe/onboarding-link`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: { Authorization: `Bearer ${accessToken.value}` },
+    },
+  );
+  window.location.href = url;
+}
+
+async function editStripeProfile() {
+  try {
+    const { url } = await $fetch(
+      `${config.public.apiBase}/stripe/dashboard-link`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: { Authorization: `Bearer ${accessToken.value}` },
+      },
+    );
+    window.location.href = url;
+  } catch (e: any) {
+    toast.add({
+      title: "Erreur",
+      description:
+        e?.data?.message ||
+        "Impossible de récupérer le lien vers le dashboard Stripe.",
+      color: "error",
+    });
+  }
+}
+
 async function handleLogout() {
   await logout();
   await navigateTo("/");
@@ -45,6 +83,7 @@ async function handleLogout() {
     <div
       class="w-full max-w-md rounded-2xl border border-gray-400 bg-white p-8 shadow-sm"
     >
+      <!-- Titre + bouton suppression + Modale pour suppression -->
       <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold mb-2">Dashboard</h1>
         <UButton
@@ -98,6 +137,31 @@ async function handleLogout() {
       <p class="mb-6 text-gray-600">Profil chargé depuis `GET /auth/me`.</p>
 
       <div v-if="user" class="space-y-2 text-sm">
+        <UButton
+          class="w-full rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          v-if="!user.stripeOnboardingComplete"
+          @click="startStripeOnboarding"
+        >
+          Devenir vendeur
+        </UButton>
+        <UButton
+          v-if="user.stripeOnboardingComplete"
+          class="pill bg-green-500 text-white"
+          transition-all
+          @click="editStripeProfile"
+        >
+          Vous êtes déjà vendeur.
+          <UButton icon="i-gravity-ui-gear" color="gray"></UButton>
+        </UButton>
+
+        <NuxtLink
+          v-if="user.stripeOnboardingComplete"
+          to="/mon-compte/portefeuille"
+          class="block rounded-lg bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600"
+        >
+          Accéder à votre portefeuille
+        </NuxtLink>
+
         <p><span class="font-semibold">ID :</span> {{ user.id }}</p>
         <p><span class="font-semibold">Email :</span> {{ user.email }}</p>
         <p>
@@ -105,7 +169,7 @@ async function handleLogout() {
           {{ user.nom }}
         </p>
         <p><span class="font-semibold">Compte :</span> {{ user.typeCompte }}</p>
-        <UButton class="mt-4 w-full" color="primary" @click="handleLogout"
+        <UButton class="mt-4 mx-auto" color="primary" @click="handleLogout"
           >Se déconnecter</UButton
         >
       </div>

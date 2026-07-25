@@ -37,6 +37,9 @@ export function useAuth() {
     sameSite: "lax",
   });
   const config = useRuntimeConfig();
+  const apiBase = import.meta.server
+    ? config.apiBaseServer
+    : config.public.apiBase;
 
   function getHeaders(): Record<string, string> {
     if (import.meta.server) {
@@ -53,8 +56,13 @@ export function useAuth() {
       try {
         const res = await fetchWithRetry(() =>
           $fetch<{ accessToken: string }>(
-            `${config.public.apiBase}/auth/refresh`,
-            { method: "POST", credentials: "include", headers: h, timeout: 5000 },
+            `${apiBase}/auth/refresh`,
+            {
+              method: "POST",
+              credentials: "include",
+              headers: h,
+              timeout: 5000,
+            },
           ),
         );
         accessToken.value = res.accessToken;
@@ -62,7 +70,10 @@ export function useAuth() {
       } catch (e: any) {
         const status = e?.response?.status ?? e?.status;
         if (status !== 401) {
-          console.error("[useAuth] refreshSession failed:", e?.cause ?? e?.message ?? e);
+          console.error(
+            "[useAuth] refreshSession failed:",
+            e?.cause ?? e?.message ?? e,
+          );
         }
         accessToken.value = null;
         user.value = null;
@@ -87,7 +98,7 @@ export function useAuth() {
 
     const fetchProfileRequest = () =>
       fetchWithRetry(() =>
-        $fetch<User>(`${config.public.apiBase}/auth/me`, {
+        $fetch<User>(`${apiBase}/auth/me`, {
           credentials: "include",
           headers: { ...h, Authorization: `Bearer ${accessToken.value}` },
           timeout: 5000,
@@ -104,7 +115,10 @@ export function useAuth() {
       return res;
     } catch (error: any) {
       if (error?.response?.status !== 401) {
-        console.error("[useAuth] fetchProfile non-401 failure:", error?.cause ?? error?.message ?? error);
+        console.error(
+          "[useAuth] fetchProfile non-401 failure:",
+          error?.cause ?? error?.message ?? error,
+        );
         throw error;
       }
 
@@ -147,7 +161,7 @@ export function useAuth() {
 
   async function login(email: string, password: string) {
     const res = await $fetch<AuthResponse>(
-      `${config.public.apiBase}/auth/login`,
+      `${apiBase}/auth/login`,
       { method: "POST", credentials: "include", body: { email, password } },
     );
     accessToken.value = res.accessToken;
@@ -163,7 +177,7 @@ export function useAuth() {
     typeCompte: string,
   ) {
     const res = await $fetch<AuthResponse>(
-      `${config.public.apiBase}/auth/signup`,
+      `${apiBase}/auth/signup`,
       {
         method: "POST",
         credentials: "include",
@@ -178,7 +192,7 @@ export function useAuth() {
   async function logout() {
     try {
       if (accessToken.value) {
-        await $fetch(`${config.public.apiBase}/auth/logout`, {
+        await $fetch(`${apiBase}/auth/logout`, {
           method: "POST",
           credentials: "include",
           headers: { Authorization: `Bearer ${accessToken.value}` },

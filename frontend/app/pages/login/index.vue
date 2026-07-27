@@ -3,6 +3,10 @@ const toast = useToast();
 const loading = ref(false);
 const { login, user } = useAuth();
 
+definePageMeta({
+  layout: "blank",
+});
+
 const route = useRoute();
 
 async function handleLogin(data: { email: string; password: string }) {

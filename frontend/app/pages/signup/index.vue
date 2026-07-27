@@ -3,12 +3,16 @@ const toast = useToast();
 const loading = ref(false);
 const { signup, user } = useAuth();
 
+definePageMeta({
+  layout: "blank",
+  title: "Ajouter une annonce",
+});
+
 async function handleSignUp(data: { prenom: string; nom: string; email: string; password: string; typeCompte: string }) {
   loading.value = true;
   try {
     const res = await signup(data.prenom, data.nom, data.email, data.password, data.typeCompte);
     user.value = res.user;
-    //TODO: revoir les toasts pour qu'ils soient plus explicites et utiles pour l'utilisateur
     toast.add({ title: 'Success', description: 'Compte créé avec succès, vérifiez votre email', color: 'success' });
     await navigateTo('/login');
   } catch (err) {

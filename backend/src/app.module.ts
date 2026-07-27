@@ -8,6 +8,9 @@ import { AdminModule } from './admin/admin.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { StripeModule } from './stripe/stripe.module';
+import { AddModule } from './add/add.module';
+import { UploadModule } from './upload/upload.module';
+import { ImprimeurModule } from './imprimeur/imprimeur.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { StripeModule } from './stripe/stripe.module';
     AdminModule,
     PrismaModule,
     StripeModule,
+    AddModule,
+    UploadModule,
+    ImprimeurModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

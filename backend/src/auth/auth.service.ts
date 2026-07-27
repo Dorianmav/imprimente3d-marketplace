@@ -302,6 +302,7 @@ export class AuthService {
       typeCompte: user.typeCompte,
       isVerified: user.isVerified,
       stripeOnboardingComplete: user.stripeOnboardingComplete,
+      // imprimeurProfil: user.imprimeurProfil,
     };
   }
 

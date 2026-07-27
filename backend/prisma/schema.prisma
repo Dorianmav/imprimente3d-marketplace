@@ -81,7 +81,7 @@ model AnnonceVente {
   photos         String[]
   prixProduit    Int
   modeLivraison  ModeLivraison
-  fraisLivraison Int
+  fraisLivraison Float
   stock          Int?
   statut         StatutAnnonceVente @default(ACTIVE)
   createdAt      DateTime           @default(now())

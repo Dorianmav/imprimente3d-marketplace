@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider     = "prisma-client-js"
   output       = "../src/generated/prisma"
@@ -34,11 +32,12 @@ enum Materiau {
 
 enum CategorieAnnonce {
   DECORATION
-  JOUET
-  MAQUETTE
-  PIECE_TECHNIQUE
-  COSPLAY
-  MINIATURE
+  FIGURINES_JEU
+  PIECES_TECHNIQUES
+  BIJOUX_ACCESSOIRES
+  MAISON_RANGEMENT
+  EDUCATION_MAQUETTES
+  SUR_MESURE_PERSONNALISE
   AUTRE
 }
 
@@ -51,8 +50,8 @@ enum ModeLivraison {
 enum StatutAnnonceVente {
   ACTIVE
   VENDU
-  ARCHIVEE
-  SUSPENDUE
+  ARCHIVE
+  SUSPENDU
 }
 
 enum StatutAnnonceDemande {
@@ -125,41 +124,42 @@ enum StatutSignalement {
 //////////////////////
 
 model User {
-  id                       String                    @id @default(cuid())
-  email                    String                    @unique
+  id                       String              @id @default(cuid())
+  email                    String              @unique
   passwordHash             String
   nom                      String
   prenom                   String
-  typeCompte               TypeCompte
+  typeCompte               TypeCompte            @default(particulier)
   avatar                   String?
   localisation             Json?
   stripeCustomerId         String?
   stripeAccountId          String?
-  stripeOnboardingComplete Boolean @default(false)
-  noteMoyenne Float @default(0)
-  nbAvis      Int   @default(0)
-  siret              String?
-  numeroTva          String?
-  nomCommercial      String?
-  adresseFacturation String?
-  stripeBusinessType String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  imprimeurProfil ImprimeurProfil?
-  annoncesVente   AnnonceVente[]   @relation("VendeurAnnonces")
-  annoncesDemande AnnonceDemande[] @relation("AcheteurDemandes")
-  devis Devis[]
-  commandesAcheteur Commande[] @relation("AcheteurCommandes")
-  commandesVendeur  Commande[] @relation("VendeurCommandes")
-  avisDonnes Avis[] @relation("AuteurAvis")
-  avisRecus  Avis[] @relation("CibleAvis")
-  conversations ConversationParticipant[]
-  messages Message[]
-  offres OffreMessagerie[]
-  signalements SignalementMessagerie[]
-  blocksInitiated UserBlock[] @relation("Blocker")
-  blocksReceived  UserBlock[] @relation("Blocked")
-  refreshToken String?
+  stripeOnboardingComplete Boolean             @default(false)
+  noteMoyenne              Float               @default(0)
+  nbAvis                   Int                 @default(0)
+  siret                    String?
+  numeroTva                String?
+  nomCommercial            String?
+  adresseFacturation       String?
+  stripeBusinessType       String?
+  refreshToken             String?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+
+  imprimeurProfil          ImprimeurProfil?
+  annoncesVente            AnnonceVente[]        @relation("VendeurAnnonces")
+  annoncesDemande          AnnonceDemande[]      @relation("AcheteurDemandes")
+  devis                    Devis[]
+  commandesAcheteur        Commande[]            @relation("AcheteurCommandes")
+  commandesVendeur         Commande[]            @relation("VendeurCommandes")
+  avisDonnes               Avis[]                @relation("AuteurAvis")
+  avisRecus                Avis[]                @relation("CibleAvis")
+  conversations            ConversationParticipant[]
+  messages                 Message[]
+  offres                   OffreMessagerie[]
+  signalements             SignalementMessagerie[]
+  blocksInitiated          UserBlock[]             @relation("Blocker")
+  blocksReceived           UserBlock[]             @relation("Blocked")
 }
 
 //////////////////////
@@ -167,16 +167,16 @@ model User {
 //////////////////////
 
 model ImprimeurProfil {
-  userId           String     @id
-  bio              String?
-  imprimantes      Json
-  materiaux        Materiau[]
-  localisation     Json
-  zoneExpedition   String?
-  delaiMoyenJours  Int
-  tarifsIndicatifs Json
-  disponible       Boolean    @default(true)
-  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String         @id
+  bio                String?
+  imprimantes        Json
+  materiaux          Materiau[]
+  localisation       Json
+  zoneExpedition     String?
+  delaiMoyenJours    Int
+  tarifsIndicatifs   Json
+  disponible         Boolean        @default(true)
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 //////////////////////
@@ -184,22 +184,29 @@ model ImprimeurProfil {
 //////////////////////
 
 model AnnonceVente {
-  id             String             @id @default(cuid())
-  vendeurId      String
-  titre          String
-  description    String
-  categorie      CategorieAnnonce
-  materiau       Materiau
-  couleur        String
-  photos         String[]
-  prixProduit    Int
-  modeLivraison  ModeLivraison
-  fraisLivraison Int
-  stock          Int?
-  statut         StatutAnnonceVente @default(ACTIVE)
-  vendeur        User               @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  vendeurId        String
+  titre            String
+  description      String
+  categorie        CategorieAnnonce
+  materiau         Materiau
+  couleur          String
+  photos           String[]           @default([])
+  prixProduit      Int
+  modeLivraison    ModeLivraison
+  fraisLivraison   Int
+  stock            Int?
+  statut           StatutAnnonceVente @default(ACTIVE)
+  vendeur          User               @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
+  conversations    Conversation[]     @relation("VenteConversations")
+  commandes        Commande[]         @relation("VenteCommandes")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([vendeurId])
+  @@index([statut])
+  @@index([categorie])
+  @@index([createdAt])
 }
 
 //////////////////////
@@ -207,21 +214,26 @@ model AnnonceVente {
 //////////////////////
 
 model AnnonceDemande {
-  id               String               @id @default(cuid())
-  acheteurId       String
-  titre            String
-  description      String?
-  fichier3d        String?
-  photosReference  String[]
-  budgetMax        Int?
-  materiauSouhaite Materiau?
-  couleurSouhaitee String?
-  quantite         Int                  @default(1)
-  statut           StatutAnnonceDemande @default(OUVERTE)
-  dateExpiration   DateTime
-  acheteur         User                 @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
-  devis            Devis[]
-  createdAt        DateTime             @default(now())
+  id                 String               @id @default(cuid())
+  acheteurId         String
+  titre              String
+  description        String?
+  fichier3d          String?
+  photosReference    String[]             @default([])
+  budgetMax          Int?
+  materiauSouhaite   Materiau?
+  couleurSouhaitee   String?
+  quantite           Int                  @default(1)
+  statut             StatutAnnonceDemande @default(OUVERTE)
+  dateExpiration     DateTime
+  acheteur           User                 @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
+  conversations      Conversation[]       @relation("DemandeConversations")
+  devis              Devis[]
+  createdAt          DateTime             @default(now())
+
+  @@index([acheteurId])
+  @@index([statut])
+  @@index([dateExpiration])
 }
 
 //////////////////////
@@ -244,6 +256,9 @@ model Devis {
   createdAt       DateTime       @default(now())
 
   @@unique([demandeId, imprimeurId])
+  @@index([demandeId])
+  @@index([imprimeurId])
+  @@index([statut])
 }
 
 //////////////////////
@@ -272,9 +287,14 @@ model Commande {
   facturePdfKey          String?
   acheteur               User           @relation("AcheteurCommandes", fields: [acheteurId], references: [id])
   vendeur                User           @relation("VendeurCommandes", fields: [vendeurId], references: [id])
+  annonceVente           AnnonceVente?  @relation("VenteCommandes", fields: [sourceId], references: [id])
   avis                   Avis?
   createdAt              DateTime       @default(now())
   updatedAt              DateTime       @updatedAt
+
+  @@index([acheteurId])
+  @@index([vendeurId])
+  @@index([statut])
 }
 
 //////////////////////
@@ -293,6 +313,9 @@ model Avis {
   auteur      User     @relation("AuteurAvis", fields: [auteurId], references: [id])
   cible       User     @relation("CibleAvis", fields: [cibleId], references: [id])
   createdAt   DateTime @default(now())
+
+  @@index([cibleId])
+  @@index([auteurId])
 }
 
 //////////////////////
@@ -300,14 +323,18 @@ model Avis {
 //////////////////////
 
 model Conversation {
-  id                     String                    @id @default(cuid())
-  annonceType            ConversationAnnonceType?
-  annonceId              String?
-  participants           ConversationParticipant[]
-  messages               Message[]
-  offres                 OffreMessagerie[]
-  createdAt              DateTime                  @default(now())
-  signalementMessageries SignalementMessagerie[]
+  id                       String                  @id @default(cuid())
+  annonceType              ConversationAnnonceType?
+  annonceId                String?
+  participants             ConversationParticipant[]
+  messages                 Message[]
+  offres                   OffreMessagerie[]
+  createdAt                DateTime                  @default(now())
+  signalements             SignalementMessagerie[]
+  annoncesVente            AnnonceVente[]            @relation("VenteConversations")
+  annoncesDemande          AnnonceDemande[]          @relation("DemandeConversations")
+
+  @@index([annonceId])
 }
 
 model ConversationParticipant {
@@ -331,12 +358,15 @@ model Message {
   type                   MessageType
   contenu                String?
   offreId                String?
-  piecesJointes          String[]
+  piecesJointes          String[]                @default([])
   conversation           Conversation            @relation(fields: [conversationId], references: [id])
   expediteur             User                    @relation(fields: [expediteurId], references: [id])
   offre                  OffreMessagerie?        @relation(fields: [offreId], references: [id])
   createdAt              DateTime                @default(now())
-  signalementMessageries SignalementMessagerie[]
+  signalements           SignalementMessagerie[]
+
+  @@index([conversationId])
+  @@index([expediteurId])
 }
 
 //////////////////////
@@ -359,6 +389,9 @@ model OffreMessagerie {
   expediteur     User              @relation(fields: [expediteurId], references: [id])
   createdAt      DateTime          @default(now())
   messages       Message[]
+
+  @@index([conversationId])
+  @@index([statut])
 }
 
 //////////////////////
@@ -378,6 +411,9 @@ model SignalementMessagerie {
   message        Message?          @relation(fields: [messageId], references: [id])
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
+
+  @@index([statut])
+  @@index([reporterId])
 }
 
 //////////////////////

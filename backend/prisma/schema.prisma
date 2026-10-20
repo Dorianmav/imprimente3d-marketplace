@@ -47,8 +47,15 @@ enum ModeLivraison {
   LES_DEUX
 }
 
+enum TypeDisponibilite {
+  PIECE_UNIQUE
+  STOCK_LIMITE
+  SUR_COMMANDE
+}
+
 enum StatutAnnonceVente {
   ACTIVE
+  EN_PAUSE
   VENDU
   ARCHIVE
   SUSPENDU
@@ -58,6 +65,7 @@ enum StatutAnnonceDemande {
   OUVERTE
   DEVIS_EN_COURS
   CLOTUREE
+  EXPIREE
   ANNULEE
 }
 
@@ -66,6 +74,7 @@ enum StatutDevis {
   ACCEPTE
   REFUSE
   EXPIRE
+  RETIRE
 }
 
 enum SourceCommande {
@@ -89,7 +98,7 @@ enum TypeAvis {
   VENDEUR_VERS_ACHETEUR
 }
 
-enum ConversationAnnonceType {
+enum ContexteType {
   ANNONCE_VENTE
   ANNONCE_DEMANDE
 }
@@ -113,10 +122,63 @@ enum StatutOffre {
   EXPIREE
 }
 
+enum CibleTypeSignalement {
+  ANNONCE_VENTE
+  ANNONCE_DEMANDE
+  UTILISATEUR
+  MESSAGE
+  CONVERSATION
+  AVIS
+}
+
+enum MotifSignalement {
+  ILLOCITE
+  ARME
+  CONTREFACON
+  ARNAQUE
+  HARCELEMENT
+  SPAM
+  CONTENU_INAPPROPRIE
+  AUTRE
+}
+
 enum StatutSignalement {
   OUVERT
   EN_COURS
   TRAITE
+  REJETE
+}
+
+enum MotifLitige {
+  NON_RECU
+  NON_CONFORME
+  ENDOMMAGE
+  AUTRE
+}
+
+enum StatutLitige {
+  OUVERT
+  REPONSE_VENDEUR
+  EN_ARBITRAGE
+  CLOS
+}
+
+enum DecisionLitige {
+  REMBOURSE_TOTAL
+  REMBOURSE_PARTIEL
+  REJETE
+}
+
+enum PauseOrigine {
+  AUTO
+  MANUELLE
+  STRIPE
+}
+
+enum LivraisonSouhaitee {
+  ENVOI
+  MAIN_PROPRE
+  INDIFFERENT
 }
 
 //////////////////////
@@ -124,42 +186,116 @@ enum StatutSignalement {
 //////////////////////
 
 model User {
-  id                       String              @id @default(cuid())
-  email                    String              @unique
-  passwordHash             String
+  id                       String     @id @default(cuid())
+  email                    String     @unique
+  emailVerifieAt           DateTime?
+  passwordHash             String?
   nom                      String
   prenom                   String
-  typeCompte               TypeCompte            @default(particulier)
+  role                     String     @default("user")
+  statut                   String     @default("actif")
+  typeCompte               TypeCompte @default(particulier)
   avatar                   String?
+  avatarUrl                String?
   localisation             Json?
+  geom                     String? // PostGIS geography(Point,4326) as text
   stripeCustomerId         String?
   stripeAccountId          String?
-  stripeOnboardingComplete Boolean             @default(false)
-  noteMoyenne              Float               @default(0)
-  nbAvis                   Int                 @default(0)
+  stripeOnboardingComplete Boolean    @default(false)
+  noteMoyenne              Float      @default(0)
+  nbAvis                   Int        @default(0)
+  cguVersionAcceptee       String?
+  cguAccepteeAt            DateTime?
+  resetTokenHash           String? // Password reset token (hashed)
+  deletedAt                DateTime?
   siret                    String?
   numeroTva                String?
   nomCommercial            String?
-  adresseFacturation       String?
+  adresseFacturation       Json?
   stripeBusinessType       String?
-  refreshToken             String?
-  createdAt                DateTime            @default(now())
-  updatedAt                DateTime            @updatedAt
+  actifVendeur             Boolean    @default(false)
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
 
+  oauthAccounts            OAuthAccount[]
+  refreshTokens            RefreshToken[]
+  vendeursFiscal           VendeurFiscal?
   imprimeurProfil          ImprimeurProfil?
-  annoncesVente            AnnonceVente[]        @relation("VendeurAnnonces")
-  annoncesDemande          AnnonceDemande[]      @relation("AcheteurDemandes")
+  annoncesVente            AnnonceVente[]            @relation("VendeurAnnonces")
+  annoncesDemande          AnnonceDemande[]          @relation("AcheteurDemandes")
   devis                    Devis[]
-  commandesAcheteur        Commande[]            @relation("AcheteurCommandes")
-  commandesVendeur         Commande[]            @relation("VendeurCommandes")
-  avisDonnes               Avis[]                @relation("AuteurAvis")
-  avisRecus                Avis[]                @relation("CibleAvis")
-  conversations            ConversationParticipant[]
+  commandesAcheteur        Commande[]                @relation("AcheteurCommandes")
+  commandesVendeur         Commande[]                @relation("VendeurCommandes")
+  avisDonnes               Avis[]                    @relation("AuteurAvis")
+  avisRecus                Avis[]                    @relation("CibleAvis")
+  conversationsInitiees    Conversation[]            @relation("InitiatorConversations")
+  conversationsReues       Conversation[]            @relation("DestinataireConversations")
+  conversationParticipants ConversationParticipant[] @relation("UserParticipants")
   messages                 Message[]
-  offres                   OffreMessagerie[]
-  signalements             SignalementMessagerie[]
-  blocksInitiated          UserBlock[]             @relation("Blocker")
-  blocksReceived           UserBlock[]             @relation("Blocked")
+  offres                   OffreMessagerie[]         @relation("OffreExpediteur")
+  offresReues              OffreMessagerie[]         @relation("OffreDestinataire")
+  signalements             Signalement[]             @relation("SignalementReporter")
+  blocksInitiated          UserBlock[]               @relation("Blocker")
+  blocksReceived           UserBlock[]               @relation("Blocked")
+  litigesOuverts           Litige[]                  @relation("LitigeOuvertPar")
+  litigesArbitres          Litige[]                  @relation("LitigeArbitrePar")
+  signalementsTraites      Signalement[]             @relation("SignalementTraitePar")
+
+  @@index([statut])
+  @@index([role])
+  @@index([emailVerifieAt])
+}
+
+//////////////////////
+// OAUTH ACCOUNTS
+//////////////////////
+
+model OAuthAccount {
+  id             String @id @default(cuid())
+  userId         String
+  provider       String // google | apple
+  providerUserId String
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
+//////////////////////
+// REFRESH TOKENS
+//////////////////////
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String
+  familleId String
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familleId])
+  @@index([expiresAt])
+}
+
+//////////////////////
+// VENDEURS FISCAL
+//////////////////////
+
+model VendeurFiscal {
+  userId         String   @id
+  dateNaissance  DateTime
+  adresseFiscale Json // { rue, cp, ville, pays }
+  nif            String // chiffré applicativement
+  collecteAt     DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([collecteAt])
 }
 
 //////////////////////
@@ -167,16 +303,22 @@ model User {
 //////////////////////
 
 model ImprimeurProfil {
-  userId             String         @id
+  userId             String        @id
   bio                String?
-  imprimantes        Json
+  imprimantes        Json // JSONB[] — { marque, modele, dimensions_max: { x_mm, y_mm, z_mm } }
   materiaux          Materiau[]
-  localisation       Json
-  zoneExpedition     String?
+  zoneExpedition     String? // V1 : France métropolitaine
   delaiMoyenJours    Int
-  tarifsIndicatifs   Json
-  disponible         Boolean        @default(true)
-  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tarifsIndicatifs   Json // { base_gramme: int(centimes), overrides_categorie: { categorie: prix_gramme_centimes } }
+  actif              Boolean       @default(false) // profil vendeur activé
+  disponible         Boolean       @default(true) // accepte de nouvelles commandes
+  enPauseDepuis      DateTime?
+  pauseOrigine       PauseOrigine? // auto | manuelle | stripe
+  derniereActiviteAt DateTime?
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([actif])
+  @@index([disponible])
 }
 
 //////////////////////
@@ -184,29 +326,35 @@ model ImprimeurProfil {
 //////////////////////
 
 model AnnonceVente {
-  id               String             @id @default(cuid())
-  vendeurId        String
-  titre            String
-  description      String
-  categorie        CategorieAnnonce
-  materiau         Materiau
-  couleur          String
-  photos           String[]           @default([])
-  prixProduit      Int
-  modeLivraison    ModeLivraison
-  fraisLivraison   Int
-  stock            Int?
-  statut           StatutAnnonceVente @default(ACTIVE)
-  vendeur          User               @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
-  conversations    Conversation[]     @relation("VenteConversations")
-  commandes        Commande[]         @relation("VenteCommandes")
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id                   String             @id @default(cuid())
+  vendeurId            String
+  titre                String
+  description          String
+  categorie            CategorieAnnonce
+  materiau             Materiau
+  couleur              String
+  photos               String[]           @default([]) // MinIO keys[]
+  prixProduit          Int
+  typeDisponibilite    TypeDisponibilite?
+  stock                Int?
+  delaiExpeditionJours Int                @default(0)
+  modeLivraison        ModeLivraison
+  fraisLivraison       Int
+  poidsG               Int?
+  offresAutorisees     Boolean            @default(true)
+  statut               StatutAnnonceVente @default(ACTIVE)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  vendeur          User              @relation("VendeurAnnonces", fields: [vendeurId], references: [id])
+  conversations    Conversation[]    @relation("VenteConversations")
+  offresMessagerie OffreMessagerie[] @relation("VenteOffres")
 
   @@index([vendeurId])
   @@index([statut])
   @@index([categorie])
   @@index([createdAt])
+  @@index([prixProduit])
 }
 
 //////////////////////
@@ -218,18 +366,20 @@ model AnnonceDemande {
   acheteurId         String
   titre              String
   description        String?
-  fichier3d          String?
+  fichier3d          String? // MinIO key
   photosReference    String[]             @default([])
   budgetMax          Int?
   materiauSouhaite   Materiau?
   couleurSouhaitee   String?
   quantite           Int                  @default(1)
+  livraisonSouhaitee LivraisonSouhaitee?
   statut             StatutAnnonceDemande @default(OUVERTE)
   dateExpiration     DateTime
-  acheteur           User                 @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
-  conversations      Conversation[]       @relation("DemandeConversations")
-  devis              Devis[]
   createdAt          DateTime             @default(now())
+
+  acheteur      User           @relation("AcheteurDemandes", fields: [acheteurId], references: [id])
+  conversations Conversation[] @relation("DemandeConversations")
+  devis         Devis[]
 
   @@index([acheteurId])
   @@index([statut])
@@ -241,7 +391,7 @@ model AnnonceDemande {
 //////////////////////
 
 model Devis {
-  id              String         @id @default(cuid())
+  id              String      @id @default(cuid())
   demandeId       String
   imprimeurId     String
   prixProduit     Int
@@ -250,15 +400,18 @@ model Devis {
   materiauPropose Materiau
   couleurProposee String
   message         String?
-  statut          StatutDevis    @default(EN_ATTENTE)
-  demande         AnnonceDemande @relation(fields: [demandeId], references: [id])
-  imprimeur       User           @relation(fields: [imprimeurId], references: [id])
-  createdAt       DateTime       @default(now())
+  validiteJusquA  DateTime // défaut création + DEVIS_TTL_DAYS
+  statut          StatutDevis @default(EN_ATTENTE)
+  createdAt       DateTime    @default(now())
 
-  @@unique([demandeId, imprimeurId])
+  demande   AnnonceDemande @relation(fields: [demandeId], references: [id])
+  imprimeur User           @relation(fields: [imprimeurId], references: [id])
+
+  @@unique([demandeId, imprimeurId, statut], name: "unique_active_devis")
   @@index([demandeId])
   @@index([imprimeurId])
   @@index([statut])
+  @@index([validiteJusquA])
 }
 
 //////////////////////
@@ -266,35 +419,77 @@ model Devis {
 //////////////////////
 
 model Commande {
-  id                     String         @id @default(cuid())
-  acheteurId             String
-  vendeurId              String
-  sourceType             SourceCommande
-  sourceId               String
-  montantProduit         Int
-  fraisLivraison         Int
-  commissionPct          Float          @default(3)
-  commissionFixe         Int            @default(80)
-  commissionTotale       Int
-  montantTotalAcheteur   Int
-  stripePaymentIntentId  String?
-  stripeTransferId       String?
-  statut                 StatutCommande @default(EN_ATTENTE_PAIEMENT)
-  trackingInfo           String?
-  dateExpedition         DateTime?
-  dateLivraisonConfirmee DateTime?
-  dateLiberationAuto     DateTime?
-  facturePdfKey          String?
-  acheteur               User           @relation("AcheteurCommandes", fields: [acheteurId], references: [id])
-  vendeur                User           @relation("VendeurCommandes", fields: [vendeurId], references: [id])
-  annonceVente           AnnonceVente?  @relation("VenteCommandes", fields: [sourceId], references: [id])
-  avis                   Avis?
-  createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
+  id                      String         @id @default(cuid())
+  acheteurId              String
+  vendeurId               String
+  sourceType              SourceCommande
+  sourceId                String
+  quantite                Int            @default(1)
+  modeLivraison           ModeLivraison
+  adresseLivraison        Json? // snapshot { nom, rue, cp, ville, pays }
+  montantProduit          Int
+  fraisLivraison          Int
+  commissionPct           Float          @default(3)
+  commissionFixe          Int            @default(80)
+  commissionTotale        Int
+  montantTotalAcheteur    Int
+  montantRembourse        Int            @default(0)
+  stripePaymentIntentId   String?
+  stripeTransferId        String?
+  statut                  StatutCommande @default(EN_ATTENTE_PAIEMENT)
+  motifAnnulation         String? // non_paiement | non_expedition | acheteur | vendeur | admin
+  trackingInfo            String?
+  codeRemise              String? // 6 chiffres, main_propre uniquement
+  datePaiement            DateTime?
+  dateLimiteExpedition    DateTime?
+  dateExpedition          DateTime?
+  dateLivraisonConfirmee  DateTime?
+  dateLiberationPrevue    DateTime?
+  dateLiberationEffectiva DateTime?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  acheteur User    @relation("AcheteurCommandes", fields: [acheteurId], references: [id])
+  vendeur  User    @relation("VendeurCommandes", fields: [vendeurId], references: [id])
+  avis     Avis[]
+  litige   Litige?
 
   @@index([acheteurId])
   @@index([vendeurId])
   @@index([statut])
+  @@index([stripePaymentIntentId])
+  @@index([dateLimiteExpedition])
+}
+
+//////////////////////
+// LITIGES
+//////////////////////
+
+model Litige {
+  id               String          @id @default(cuid())
+  commandeId       String          @unique
+  ouvertParId      String
+  motif            MotifLitige
+  description      String
+  photos           String[]        @default([]) // MinIO keys[]
+  reponseVendeur   String?
+  reponseAt        DateTime?
+  statut           StatutLitige    @default(OUVERT)
+  decision         DecisionLitige?
+  montantRembourse Int?
+  decideParId      String?
+  noteAdmin        String?
+  closedAt         DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  commande  Commande @relation(fields: [commandeId], references: [id])
+  ouvertPar User     @relation("LitigeOuvertPar", fields: [ouvertParId], references: [id])
+  decidePar User?    @relation("LitigeArbitrePar", fields: [decideParId], references: [id])
+
+  @@index([commandeId])
+  @@index([statut])
+  @@index([ouvertParId])
 }
 
 //////////////////////
@@ -302,20 +497,24 @@ model Commande {
 //////////////////////
 
 model Avis {
-  id          String   @id @default(cuid())
-  commandeId  String   @unique
+  id          String    @id @default(cuid())
+  commandeId  String
   auteurId    String
   cibleId     String
-  note        Int
-  commentaire String?
+  note        Int // 1-5
+  commentaire String? // 500 caractères max
   type        TypeAvis
-  commande    Commande @relation(fields: [commandeId], references: [id])
-  auteur      User     @relation("AuteurAvis", fields: [auteurId], references: [id])
-  cible       User     @relation("CibleAvis", fields: [cibleId], references: [id])
-  createdAt   DateTime @default(now())
+  publieAt    DateTime?
+  createdAt   DateTime  @default(now())
 
+  commande Commande @relation(fields: [commandeId], references: [id])
+  auteur   User     @relation("AuteurAvis", fields: [auteurId], references: [id])
+  cible    User     @relation("CibleAvis", fields: [cibleId], references: [id])
+
+  @@unique([commandeId, type])
   @@index([cibleId])
   @@index([auteurId])
+  @@index([publieAt])
 }
 
 //////////////////////
@@ -323,26 +522,35 @@ model Avis {
 //////////////////////
 
 model Conversation {
-  id                       String                  @id @default(cuid())
-  annonceType              ConversationAnnonceType?
-  annonceId                String?
-  participants             ConversationParticipant[]
-  messages                 Message[]
-  offres                   OffreMessagerie[]
-  createdAt                DateTime                  @default(now())
-  signalements             SignalementMessagerie[]
-  annoncesVente            AnnonceVente[]            @relation("VenteConversations")
-  annoncesDemande          AnnonceDemande[]          @relation("DemandeConversations")
+  id             String        @id @default(cuid())
+  initiateurId   String
+  destinataireId String
+  contexteType   ContexteType?
+  contexteId     String?
+  createdAt      DateTime      @default(now())
 
-  @@index([annonceId])
+  initiateur   User                      @relation("InitiatorConversations", fields: [initiateurId], references: [id])
+  destinataire User                      @relation("DestinataireConversations", fields: [destinataireId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+  offres       OffreMessagerie[]         @relation("ConversationOffres")
+
+  annoncesVente   AnnonceVente[]   @relation("VenteConversations")
+  annoncesDemande AnnonceDemande[] @relation("DemandeConversations")
+  signalements    Signalement[]
+
+  @@unique([contexteType, contexteId, initiateurId], name: "unique_conv_context_initiator")
+  @@index([destinataireId])
+  @@index([createdAt])
 }
 
 model ConversationParticipant {
   conversationId String
   userId         String
   dernierLuAt    DateTime?
+  archivee       Boolean      @default(false)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User         @relation("UserParticipants", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([conversationId, userId])
 }
@@ -352,21 +560,23 @@ model ConversationParticipant {
 //////////////////////
 
 model Message {
-  id                     String                  @id @default(cuid())
-  conversationId         String
-  expediteurId           String
-  type                   MessageType
-  contenu                String?
-  offreId                String?
-  piecesJointes          String[]                @default([])
-  conversation           Conversation            @relation(fields: [conversationId], references: [id])
-  expediteur             User                    @relation(fields: [expediteurId], references: [id])
-  offre                  OffreMessagerie?        @relation(fields: [offreId], references: [id])
-  createdAt              DateTime                @default(now())
-  signalements           SignalementMessagerie[]
+  id             String      @id @default(cuid())
+  conversationId String
+  expediteurId   String
+  type           MessageType
+  contenu        String?
+  offreId        String?
+  piecesJointes  String[]    @default([]) // Max 5, jpeg/png/webp
+  flags          String? // text[] ex: contournement_suspecte
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation     @relation(fields: [conversationId], references: [id])
+  expediteur   User             @relation(fields: [expediteurId], references: [id])
+  offre        OffreMessagerie? @relation(fields: [offreId], references: [id])
 
   @@index([conversationId])
   @@index([expediteurId])
+  @@index([createdAt])
 }
 
 //////////////////////
@@ -374,50 +584,65 @@ model Message {
 //////////////////////
 
 model OffreMessagerie {
-  id             String            @id @default(cuid())
+  id             String      @id @default(cuid())
   conversationId String
   expediteurId   String
-  annonceType    OffreAnnonceType
-  annonceId      String
+  destinataireId String
+  annonceVenteId String?
   montant        Int
   fraisLivraison Int
-  statut         StatutOffre       @default(EN_ATTENTE)
+  statut         StatutOffre @default(EN_ATTENTE)
   parentOffreId  String?
-  parent         OffreMessagerie?  @relation("ContreOffre", fields: [parentOffreId], references: [id])
-  contreOffres   OffreMessagerie[] @relation("ContreOffre")
-  conversation   Conversation      @relation(fields: [conversationId], references: [id])
-  expediteur     User              @relation(fields: [expediteurId], references: [id])
-  createdAt      DateTime          @default(now())
-  messages       Message[]
+  expireAt       DateTime
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  conversation Conversation      @relation("ConversationOffres", fields: [conversationId], references: [id])
+  expediteur   User              @relation("OffreExpediteur", fields: [expediteurId], references: [id])
+  destinataire User              @relation("OffreDestinataire", fields: [destinataireId], references: [id])
+  annonceVente AnnonceVente?     @relation("VenteOffres", fields: [annonceVenteId], references: [id])
+  parent       OffreMessagerie?  @relation("ContreOffre", fields: [parentOffreId], references: [id])
+  contreOffres OffreMessagerie[] @relation("ContreOffre")
+  messages     Message[]
 
   @@index([conversationId])
   @@index([statut])
+  @@index([expediteurId])
+  @@index([destinataireId])
+  @@index([expireAt])
 }
 
 //////////////////////
-// SIGNALEMENTS
+// SIGNALEMENTS UNIFIE
 //////////////////////
 
-model SignalementMessagerie {
-  id             String            @id @default(cuid())
+model Signalement {
+  id             String               @id @default(cuid())
   reporterId     String
-  conversationId String
-  messageId      String?
-  motif          String
-  statut         StatutSignalement @default(OUVERT)
+  cibleType      CibleTypeSignalement
+  cibleId        String
+  conversationId String?
+  motif          MotifSignalement
+  description    String // 1000 caractères max
+  statut         StatutSignalement    @default(OUVERT)
+  decision       String?
   noteAdmin      String?
-  reporter       User              @relation(fields: [reporterId], references: [id])
-  conversation   Conversation      @relation(fields: [conversationId], references: [id])
-  message        Message?          @relation(fields: [messageId], references: [id])
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  traiteParId    String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  reporter     User          @relation("SignalementReporter", fields: [reporterId], references: [id])
+  conversation Conversation? @relation(fields: [conversationId], references: [id])
+  traitePar    User?         @relation("SignalementTraitePar", fields: [traiteParId], references: [id])
 
   @@index([statut])
   @@index([reporterId])
+  @@index([cibleType, cibleId])
+  @@index([traiteParId])
 }
 
 //////////////////////
-// BLOCKS
+// BLOCKS (V1)
 //////////////////////
 
 model UserBlock {
@@ -428,4 +653,39 @@ model UserBlock {
   createdAt DateTime @default(now())
 
   @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+//////////////////////
+// STRIPE WEBHOOK EVENTS (déduplication)
+//////////////////////
+
+model StripeWebhookEvent {
+  eventId  String    @id @default(cuid())
+  type     String
+  payload  Json
+  recuAt   DateTime  @default(now())
+  traiteAt DateTime?
+  erreur   String?
+
+  @@index([type])
+  @@index([recuAt])
+}
+
+//////////////////////
+// ADMIN AUDIT LOG
+//////////////////////
+
+model AdminAuditLog {
+  id        String   @id @default(cuid())
+  acteurId  String
+  action    String
+  cibleType String
+  cibleId   String?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([acteurId])
+  @@index([cibleType, cibleId])
+  @@index([createdAt])
 }

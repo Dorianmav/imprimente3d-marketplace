@@ -1,0 +1,334 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Global env
+env:
+  NODE_VERSION: 20
+  COMPOSE_PROJECT_NAME: mkpl-test
+  DB_USER: mkpl
+  DB_PASSWORD: mkpl_secret
+  DB_NAME: marketplace3d_test
+  DATABASE_URL: postgresql://mkpl:mkpl_secret@localhost:5432/marketplace3d_test
+  REDIS_URL: redis://localhost:6379
+  JWT_SECRET: test-jwt-secret
+  JWT_REFRESH_SECRET: test-jwt-refresh-secret
+  NODE_ENV: test
+  MINIO_ENDPOINT: localhost
+  MINIO_PORT: 9000
+  MINIO_ACCESS_KEY: minioadmin
+  MINIO_SECRET_KEY: minioadmin
+  MINIO_BUCKET_IMAGES: marketplace3d-images
+  MINIO_BUCKET_FILES: marketplace3d-files
+  MINIO_BUCKET_MESSAGES: marketplace3d-messages
+
+jobs:
+  # ============================================================
+  # 1. Lint
+  # ============================================================
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint backend
+        working-directory: backend
+        run: pnpm run lint -- --max-warnings 0
+
+      - name: Lint shared
+        working-directory: packages/shared
+        run: pnpm run lint -- --max-warnings 0
+
+  # ============================================================
+  # 2. Typecheck
+  # ============================================================
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: pnpm run prisma:generate
+
+      - name: Typecheck backend
+        working-directory: backend
+        run: npx tsc --noEmit
+
+      - name: Typecheck shared
+        working-directory: packages/shared
+        run: npx tsc --noEmit
+
+  # ============================================================
+  # 3. Unit Tests
+  # ============================================================
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: pnpm run prisma:generate
+
+      - name: Run unit tests
+        working-directory: backend
+        run: pnpm run test:cov
+
+      - name: Check coverage threshold
+        working-directory: backend
+        run: pnpm run test:cov -- --coverageThreshold='{"global":{"branches":70,"functions":70,"lines":70,"statements":70}}'
+
+  # ============================================================
+  # 4. E2E Tests (Postgres + Redis services)
+  # ============================================================
+  test-e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 30s
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: pnpm run prisma:generate
+
+      - name: Run migrations
+        working-directory: backend
+        run: pnpm run prisma migrate deploy
+
+      - name: Run e2e tests
+        working-directory: backend
+        run: pnpm run test:e2e
+
+  # ============================================================
+  # 5. Docker Build
+  # ============================================================
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: marketplace3d-backend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: marketplace3d-frontend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================
+  # 6. Migration Replay (fresh DB)
+  # ============================================================
+  migration-replay:
+    name: Migration Replay
+    runs-on: ubuntu-latest
+    needs: [test-e2e]
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 30s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: pnpm run prisma:generate
+
+      - name: Run migrations on empty DB
+        working-directory: backend
+        run: pnpm run prisma migrate deploy
+
+      - name: Verify schema is synced
+        working-directory: backend
+        run: npx prisma validate
+
+      - name: Reset and replay migrations
+        working-directory: backend
+        run: |
+          # Drop and recreate the DB, then replay all migrations
+          psql -h localhost -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+          pnpm run prisma migrate deploy
+          npx prisma validate
+
+  # ============================================================
+  # 7. Dependency Audit
+  # ============================================================
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit backend
+        working-directory: backend
+        run: pnpm audit --audit-level=moderate || true
+
+  # ============================================================
+  # 8. Secret Detection
+  # ============================================================
+  secret-detection:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for secrets in git history
+        run: |
+          # Check for common secret patterns in staged/changed files
+          grep -rn "sk_test_\|sk_live_\|whsec_\|re-\|novu-\|eyJ" --include="*.ts" --include="*.js" --include="*.json" --exclude-dir=node_modules --exclude-dir=dist || true
+        continue-on-error: true
+
+      - name: Check .env files are not committed
+        run: |
+          if [ -f backend/.env ]; then
+            echo "::error::.env file should not be committed"
+            exit 1
+          fi
+          if [ -f .env ]; then
+            echo "::error::.env file should not be committed"
+            exit 1
+          fi

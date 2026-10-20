@@ -1,7 +1,7 @@
 services:
-  # --- PostgreSQL ---
+  # --- PostgreSQL + PostGIS + pg_trgm ---
   postgres:
-    image: postgres:16-alpine
+    image: postgis/postgis:16-3.4
     container_name: mkpl-postgres
     restart: unless-stopped
     environment:
@@ -10,19 +10,18 @@ services:
       POSTGRES_DB: ${DB_NAME:-marketplace3d}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Init script to enable extensions
+      - ./scripts/db/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${DB_USER:-mkpl} -d ${DB_NAME:-marketplace3d}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mkpl} -d ${DB_NAME:-marketplace3d}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
 
-  # --- Redis (BullMQ) ---
+  # --- Redis (BullMQ + rate limiting) ---
   redis:
     image: redis:7-alpine
     container_name: mkpl-redis
@@ -37,7 +36,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- MinIO (stockage fichiers) ---
+  # --- MinIO (S3-compatible storage) ---
   minio:
     image: minio/minio:latest
     container_name: mkpl-minio
@@ -56,6 +55,38 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 15s
+
+  # --- ClamAV (antivirus) ---
+  clamav:
+    image: clamav/clamav:1.3
+    container_name: mkpl-clamav
+    restart: unless-stopped
+    ports:
+      - "3310:3310"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 3310 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # --- Sentry (error tracking) ---
+  sentry:
+    image: getsentry/sentry:latest
+    container_name: mkpl-sentry
+    restart: unless-stopped
+    ports:
+      - "9090:9000"
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY:-sentry-secret-key-change-this}
+      SENTRY_SECRET_KEY_BASE64: ${SENTRY_SECRET_KEY_BASE64:-}
+      SENTRY_ENCRYPTION_KEY: ${SENTRY_ENCRYPTION_KEY:-sentry-encryption-key}
+    volumes:
+      - sentry_data:/var/lib/sentry
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   # --- Backend NestJS ---
   backend:
@@ -66,28 +97,91 @@ services:
     container_name: mkpl-backend
     restart: unless-stopped
     environment:
+      # Server
+      PORT: ${PORT:-3001}
+      NODE_ENV: ${NODE_ENV:-development}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      API_URL: ${API_URL:-http://localhost:3001}
+
+      # Database
       DATABASE_URL: postgresql://${DB_USER:-mkpl}:${DB_PASSWORD:-mkpl_secret}@postgres:5432/${DB_NAME:-marketplace3d}?schema=public
+
+      # Redis
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: ${JWT_SECRET:-supersecretjwt}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-supersecretrefresh}
-      JWT_ACCESS_EXPIRATION: 15m
-      JWT_REFRESH_EXPIRATION: 7d
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwt-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-supersecretrefresh-change-in-production}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_fake_key}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_fake_secret}
       STRIPE_PLATFORM_ACCOUNT_ID: ${STRIPE_PLATFORM_ACCOUNT_ID:-}
+      STRIPE_CONNECT_VERSION: ${STRIPE_CONNECT_VERSION:-2024-06-20}
+
+      # MinIO
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
       MINIO_USE_SSL: false
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
-      MINIO_BUCKET: ${MINIO_BUCKET:-marketplace3d}
-      APP_URL: ${APP_URL:-http://localhost:3000}
-      API_URL: ${API_URL:-http://localhost:3001}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      NOVU_API_KEY: ${NOVU_API_KEY:-}
-      NOVU_APP_ID: ${NOVU_APP_ID:-}
-      COMMISSION_PCT: ${COMMISSION_PCT:-0.03}
+      MINIO_BUCKET_IMAGES: ${MINIO_BUCKET_IMAGES:-marketplace3d-images}
+      MINIO_BUCKET_FILES: ${MINIO_BUCKET_FILES:-marketplace3d-files}
+      MINIO_BUCKET_MESSAGES: ${MINIO_BUCKET_MESSAGES:-marketplace3d-messages}
+      MINIO_REGION: ${MINIO_REGION:-us-east-1}
+
+      # ClamAV
+      CLAMAV_HOST: ${CLAMAV_HOST:-clamav}
+      CLAMAV_PORT: ${CLAMAV_PORT:-3310}
+
+      # Sentry
+      SENTRY_DSN: ${SENTRY_DSN:-}
+
+      # Novu (notifications orchestration)
+      NOVU_API_KEY: ${NOVU_API_KEY:-novu-fake-api-key}
+      NOVU_APP_ID: ${NOVU_APP_ID:-novu-fake-app-id}
+      NOVU_ENVIRONMENT_URL: ${NOVU_ENVIRONMENT_URL:-https://api.novu.co}
+
+      # Resend (email)
+      RESEND_API_KEY: ${RESEND_API_KEY:-re-fake-key}
+
+      # Firebase (push notifications)
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-mkpl-3d}
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-}
+
+      # Commission
+      COMMISSION_PCT: ${COMMISSION_PCT:-3}
       COMMISSION_FIXED_CENTS: ${COMMISSION_FIXED_CENTS:-80}
+      PRICE_MIN_CENTS: ${PRICE_MIN_CENTS:-300}
+      OFFER_MIN_RATIO: ${OFFER_MIN_RATIO:-0.5}
+      OFFER_TTL_HOURS: ${OFFER_TTL_HOURS:-48}
+      OFFER_PAYMENT_TTL_HOURS: ${OFFER_PAYMENT_TTL_HOURS:-24}
+      DEVIS_TTL_DAYS: ${DEVIS_TTL_DAYS:-7}
+      DEVIS_PAYMENT_TTL_HOURS: ${DEVIS_PAYMENT_TTL_HOURS:-48}
+      CHECKOUT_TTL_MINUTES: ${CHECKOUT_TTL_MINUTES:-30}
+      DEMANDE_TTL_DAYS: ${DEMANDE_TTL_DAYS:-15}
+      SHIPPING_GRACE_DAYS: ${SHIPPING_GRACE_DAYS:-3}
+      MAX_SHIPPING_DAYS: ${MAX_SHIPPING_DAYS:-21}
+      RELEASE_DELAY_SHIPPED_DAYS: ${RELEASE_DELAY_SHIPPED_DAYS:-7}
+      RELEASE_DELAY_HANDOVER_DAYS: ${RELEASE_DELAY_HANDOVER_DAYS:-3}
+      DISPUTE_SELLER_RESPONSE_HOURS: ${DISPUTE_SELLER_RESPONSE_HOURS:-72}
+      VACATION_INACTIVITY_DAYS: ${VACATION_INACTIVITY_DAYS:-15}
+      REVIEW_WINDOW_DAYS: ${REVIEW_WINDOW_DAYS:-14}
+      MAX_UPLOAD_IMAGE_MB: ${MAX_UPLOAD_IMAGE_MB:-10}
+      MAX_UPLOAD_3D_MB: ${MAX_UPLOAD_3D_MB:-50}
+      SELLER_ALERT_SALES: ${SELLER_ALERT_SALES:-20}
+      SELLER_ALERT_REVENUE_CENTS: ${SELLER_ALERT_REVENUE_CENTS:-150000}
+
+      # Security
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      RATE_LIMIT_TTL: ${RATE_LIMIT_TTL:-60}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-100}
+      LOCKOUT_DURATION_MINUTES: ${LOCKOUT_DURATION_MINUTES:-30}
+      MAX_LOGIN_ATTEMPTS: ${MAX_LOGIN_ATTEMPTS:-5}
+
     ports:
       - "3001:3001"
     volumes:
@@ -101,6 +195,8 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      clamav:
+        condition: service_healthy
     command: sh -c "npx prisma migrate deploy && npx prisma generate && npm run start:dev"
 
   # --- Frontend Nuxt (dev server) ---
@@ -112,7 +208,7 @@ services:
     restart: unless-stopped
     environment:
       NUXT_PUBLIC_API_BASE: ${API_URL:-http://localhost:3001}
-      NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-pk_test_fake_key}
     ports:
       - "3000:3000"
     volumes:
@@ -123,33 +219,57 @@ services:
       - backend
     command: npm run dev
 
-  # --- Traefik (reverse proxy) ---
-  traefik:
-    image: traefik:latest
-    container_name: mkpl-traefik
+  # --- BullMQ Workers (background jobs) ---
+  workers:
+    init: true
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mkpl-workers
     restart: unless-stopped
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL:-admin@example.com}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_certs:/letsencrypt
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
+    environment:
+      PORT: ${PORT:-3001}
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-mkpl}:${DB_PASSWORD:-mkpl_secret}@postgres:5432/${DB_NAME:-marketplace3d}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwt-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-supersecretrefresh-change-in-production}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_fake_key}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_fake_secret}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_USE_SSL: false
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET_IMAGES: ${MINIO_BUCKET_IMAGES:-marketplace3d-images}
+      MINIO_BUCKET_FILES: ${MINIO_BUCKET_FILES:-marketplace3d-files}
+      MINIO_BUCKET_MESSAGES: ${MINIO_BUCKET_MESSAGES:-marketplace3d-messages}
+      NOVU_API_KEY: ${NOVU_API_KEY:-novu-fake-api-key}
+      NOVU_APP_ID: ${NOVU_APP_ID:-novu-fake-app-id}
+      RESEND_API_KEY: ${RESEND_API_KEY:-re-fake-key}
+      COMMISSION_PCT: ${COMMISSION_PCT:-3}
+      COMMISSION_FIXED_CENTS: ${COMMISSION_FIXED_CENTS:-80}
+      PRICE_MIN_CENTS: ${PRICE_MIN_CENTS:-300}
+      OFFER_MIN_RATIO: ${OFFER_MIN_RATIO:-0.5}
+      CHECKOUT_TTL_MINUTES: ${CHECKOUT_TTL_MINUTES:-30}
+      DEMANDE_TTL_DAYS: ${DEMANDE_TTL_DAYS:-15}
+      SHIPPING_GRACE_DAYS: ${SHIPPING_GRACE_DAYS:-3}
+      MAX_SHIPPING_DAYS: ${MAX_SHIPPING_DAYS:-21}
+      RELEASE_DELAY_SHIPPED_DAYS: ${RELEASE_DELAY_SHIPPED_DAYS:-7}
+      RELEASE_DELAY_HANDOVER_DAYS: ${RELEASE_DELAY_HANDOVER_DAYS:-3}
+      DISPUTE_SELLER_RESPONSE_HOURS: ${DISPUTE_SELLER_RESPONSE_HOURS:-72}
+      VACATION_INACTIVITY_DAYS: ${VACATION_INACTIVITY_DAYS:-15}
+      REVIEW_WINDOW_DAYS: ${REVIEW_WINDOW_DAYS:-14}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: npm run start:workers
 
 volumes:
   postgres_data:
   redis_data:
   minio_data:
   traefik_certs:
+  sentry_data:

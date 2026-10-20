@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
@@ -10,7 +11,9 @@ import { NotificationModule } from './notification/notification.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { WorkersModule } from './workers/workers.module';
+import { AuthGuard } from './auth/auth.guard';
 
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -31,6 +34,14 @@ import { WorkersModule } from './workers/workers.module';
     WorkersModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [
+    AppService,
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
+  exports: [AuthGuard],
 })
 export class AppModule {}

@@ -2,13 +2,57 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { GeocodingService } from './geocoding.service';
 import { UpdateProfileDto } from '../auth/dto/auth.dto';
+
+/**
+ * User blocking DTO (T-2.4)
+ */
+export interface BlockUserDto {
+  blockedId: string;
+  reason?: string;
+}
+
+/**
+ * Data export interface (T-2.6)
+ */
+export interface UserDataExport {
+  profile: Record<string, unknown>;
+  listings: Record<string, unknown>[];
+  orders: Record<string, unknown>[];
+  conversations: Record<string, unknown>[];
+  reviews: Record<string, unknown>[];
+  blocks: { blocked: Record<string, unknown>[]; blockers: Record<string, unknown>[] };
+  exportMetadata: {
+    exportedAt: string;
+    userId: string;
+    userEmail: string;
+    version: string;
+  };
+}
+
+/**
+ * CDC v1.3 user roles (T-1.7)
+ */
+export const USER_ROLES = ['particulier', 'vendeur', 'admin'] as const;
+export type UserRole = (typeof USER_ROLES)[number];
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(UserService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly geocodingService: GeocodingService,
+  ) {}
+
+  // ============================================
+  // T-2.1: Profil utilisateur et localisation
+  // ============================================
 
   /**
    * Récupère le profil complet d'un utilisateur
@@ -25,12 +69,16 @@ export class UserService {
         avatar: true,
         avatarUrl: true,
         localisation: true,
+        geom: true,
         stripeCustomerId: true,
         stripeAccountId: true,
         stripeOnboardingComplete: true,
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
+        emailVerifiedAt: true,
+        cguVersionAcceptee: true,
+        cguAccepteeAt: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -40,7 +88,6 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    // Include imprimeur profile if available
     const imprimeurProfil = await this.prisma.imprimeurProfil.findUnique({
       where: { userId },
     });
@@ -52,7 +99,7 @@ export class UserService {
   }
 
   /**
-   * Met à jour le profil d'un utilisateur
+   * Met à jour le profil d'un utilisateur avec géocoding (T-2.1)
    */
   async updateProfile(userId: string, updateDto: UpdateProfileDto) {
     // Check if email is being changed and if it's already taken
@@ -65,17 +112,39 @@ export class UserService {
       }
     }
 
+    // Prepare update data
+    const updateData: Record<string, unknown> = {
+      ...(updateDto.nom !== undefined && { nom: updateDto.nom }),
+      ...(updateDto.prenom !== undefined && { prenom: updateDto.prenom }),
+      ...(updateDto.email !== undefined && { email: updateDto.email }),
+      ...(updateDto.avatar !== undefined && { avatar: updateDto.avatar }),
+      ...(updateDto.avatarUrl !== undefined && { avatarUrl: updateDto.avatarUrl }),
+      ...(updateDto.actifVendeur !== undefined && { actifVendeur: updateDto.actifVendeur }),
+    };
+
+    // T-2.1: Geocode address if provided
+    if (updateDto.localisation && typeof updateDto.localisation === 'object') {
+      const loc = updateDto.localisation as Record<string, unknown>;
+      if (loc.address && typeof loc.address === 'string') {
+        const geo = await this.geocodingService.geocode(loc.address as string);
+        if (geo) {
+          updateData.localisation = {
+            address: loc.address,
+            latitude: geo.latitude,
+            longitude: geo.longitude,
+            formattedAddress: geo.formattedAddress,
+          };
+        } else {
+          updateData.localisation = updateDto.localisation;
+        }
+      } else {
+        updateData.localisation = updateDto.localisation;
+      }
+    }
+
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: {
-        ...(updateDto.nom !== undefined && { nom: updateDto.nom }),
-        ...(updateDto.prenom !== undefined && { prenom: updateDto.prenom }),
-        ...(updateDto.email !== undefined && { email: updateDto.email }),
-        ...(updateDto.avatar !== undefined && { avatar: updateDto.avatar }),
-        ...(updateDto.avatarUrl !== undefined && { avatarUrl: updateDto.avatarUrl }),
-        ...(updateDto.localisation !== undefined && { localisation: updateDto.localisation }),
-        ...(updateDto.actifVendeur !== undefined && { actifVendeur: updateDto.actifVendeur }),
-      },
+      data: updateData,
       select: {
         id: true,
         email: true,
@@ -85,31 +154,33 @@ export class UserService {
         avatar: true,
         avatarUrl: true,
         localisation: true,
+        geom: true,
         stripeCustomerId: true,
         stripeAccountId: true,
         stripeOnboardingComplete: true,
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
+        emailVerifiedAt: true,
+        cguVersionAcceptee: true,
+        cguAccepteeAt: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    // Also update imprimeur profile if actifVendeur changed to true
+    // Auto-create imprimeur profile if actifVendeur changed to true
     if (updateDto.actifVendeur === true) {
       const existingProfil = await this.prisma.imprimeurProfil.findUnique({
         where: { userId },
       });
 
       if (!existingProfil) {
-        // Create default imprimeur profile
         await this.prisma.imprimeurProfil.create({
           data: {
             userId,
             imprimantes: [],
             materiaux: [],
-            localisation: {},
             delaiMoyenJours: 7,
             tarifsIndicatifs: {},
           },
@@ -136,8 +207,6 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    // In a real implementation, verify the current password hash first
-    // The actual bcrypt comparison should happen in the service layer
     const { passwordHash: _, ...userWithoutPassword } = user;
 
     return {
@@ -146,16 +215,432 @@ export class UserService {
     };
   }
 
+  // ============================================
+  // T-2.5: Suppression de compte (anonymisation)
+  // ============================================
+
   /**
-   * Supprime le compte d'un utilisateur
+   * Anonymises the user's account instead of hard deleting (T-2.5)
+   * - Email → "deleted_<uuid>@anonymized.local"
+   * - Name → "Utilisateur supprimé"
+   * - Password → random hash (cannot be used)
+   * - Keeps orders, reviews, listings for legal compliance
+   * - CDC: "Les données légales conservées doivent être anonymisées"
    */
   async deleteAccount(userId: string) {
-    await this.prisma.user.delete({
-      where: { id: userId },
+    const randomId = crypto.randomUUID().slice(0, 8);
+    const anonymizedEmail = `deleted_${randomId}@anonymized.local`;
+
+    // Generate random password hash that cannot be used
+    const { argon2 } = await import('argon2');
+    const randomPasswordHash = await argon2.hash(crypto.randomBytes(32).toString('hex'), {
+      type: argon2.argon2id,
+      memoryCost: 65536,
+      timeCost: 3,
+      parallelism: 1,
     });
 
-    return { message: 'Account deleted successfully' };
+    // Anonymize user
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        email: anonymizedEmail,
+        nom: 'Utilisateur supprimé',
+        prenom: '',
+        passwordHash: randomPasswordHash,
+        avatar: null,
+        avatarUrl: null,
+        localisation: null,
+        resetTokenHash: null,
+      },
+    });
+
+    // Revoke all refresh tokens
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+
+    this.logger.log(`Account ${userId} anonymized as ${anonymizedEmail}`);
+
+    return {
+      message: 'Compte supprimé avec succès. Vos données ont été anonymisées conformément à la réglementation.',
+      anonymizedEmail,
+    };
   }
+
+  // ============================================
+  // T-2.6: Export de données
+  // ============================================
+
+  /**
+   * Exports all user data as a structured JSON object (T-2.6)
+   * GDPR compliance — user can request all their data
+   */
+  async exportUserData(userId: string): Promise<UserDataExport> {
+    // Get user profile (without sensitive fields)
+    const profile = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        nom: true,
+        prenom: true,
+        typeCompte: true,
+        avatar: true,
+        avatarUrl: true,
+        localisation: true,
+        noteMoyenne: true,
+        nbAvis: true,
+        actifVendeur: true,
+        emailVerifiedAt: true,
+        cguVersionAcceptee: true,
+        cguAccepteeAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Get user's listings
+    const listings = await this.prisma.annonceVente.findMany({
+      where: { vendeurId: userId },
+      select: {
+        id: true,
+        titre: true,
+        description: true,
+        prix: true,
+        statut: true,
+        materiaux: true,
+        couleurs: true,
+        poids: true,
+        dimensions: true,
+        fichier3dUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    // Get user's orders (as buyer or seller)
+    const orders = await this.prisma.commande.findMany({
+      where: {
+        OR: [
+          { acheteurId: userId },
+          { vendeurId: userId },
+        ],
+      },
+      select: {
+        id: true,
+        statut: true,
+        totalCents: true,
+        livraisonAdresse: true,
+        livraisonLatitude: true,
+        livraisonLongitude: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    // Get user's conversations
+    const conversations = await this.prisma.conversation.findMany({
+      where: {
+        participants: {
+          some: { userId },
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        participants: {
+          select: {
+            user: {
+              select: { id: true, nom: true, prenom: true },
+            },
+          },
+        },
+        messages: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            contenu: true,
+            emeteurId: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    // Get reviews given and received
+    const reviewsGiven = await this.prisma.avis.findMany({
+      where: { auteurId: userId },
+      select: {
+        id: true,
+        note: true,
+        commentaire: true,
+        commande: {
+          select: {
+            id: true,
+            statut: true,
+          },
+        },
+        createdAt: true,
+      },
+    });
+
+    const reviewsReceived = await this.prisma.avis.findMany({
+      where: { cibleId: userId },
+      select: {
+        id: true,
+        note: true,
+        commentaire: true,
+        auteur: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            avatar: true,
+          },
+        },
+        createdAt: true,
+      },
+    });
+
+    // Get blocked users and blockers
+    const blocked = await this.prisma.userBlock.findMany({
+      where: { blockerId: userId },
+      select: {
+        cible: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+          },
+        },
+        raison: true,
+        createdAt: true,
+      },
+    });
+
+    const blockers = await this.prisma.userBlock.findMany({
+      where: { cibleId: userId },
+      select: {
+        blocker: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+          },
+        },
+        raison: true,
+        createdAt: true,
+      },
+    });
+
+    return {
+      profile,
+      listings,
+      orders,
+      conversations,
+      reviews: { given: reviewsGiven, received: reviewsReceived },
+      blocks: {
+        blocked: blocked.map((b) => b.cible),
+        blockers: blockers.map((b) => b.blocker),
+      },
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        userId: profile.id,
+        userEmail: profile.email,
+        version: '1.0',
+      },
+    };
+  }
+
+  // ============================================
+  // T-2.7: Acceptation des CGU
+  // ============================================
+
+  /**
+   * Updates the CGU acceptance version (T-2.7)
+   * - Stores the version number and acceptance timestamp
+   * - All users must accept CGU before using the platform
+   */
+  async acceptCGU(userId: string, version: string) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        cguVersionAcceptee: version,
+        cguAccepteeAt: new Date(),
+      },
+      select: {
+        id: true,
+        cguVersionAcceptee: true,
+        cguAccepteeAt: true,
+      },
+    });
+
+    this.logger.log(`User ${userId} accepted CGU version ${version}`);
+
+    return user;
+  }
+
+  /**
+   * Checks if user has accepted the required CGU version
+   */
+  async hasAcceptedCGU(userId: string, requiredVersion: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { cguVersionAcceptee: true },
+    });
+
+    if (!user) {
+      return false;
+    }
+
+    // User has accepted the same or newer version
+    return (user.cguVersionAcceptee ?? 0) >= requiredVersion;
+  }
+
+  // ============================================
+  // T-2.4: Blocage d'utilisateurs
+  // ============================================
+
+  /**
+   * Blocks a user (T-2.4)
+   * - Blocked user cannot message or view profile of blocker
+   * - Bidirectional: blocker cannot be messaged by blocked user
+   */
+  async blockUser(userId: string, blockDto: BlockUserDto) {
+    // Prevent self-blocking
+    if (userId === blockDto.blockedId) {
+      throw new ConflictException('Cannot block yourself');
+    }
+
+    // Check if target exists
+    const target = await this.prisma.user.findUnique({
+      where: { id: blockDto.blockedId },
+    });
+
+    if (!target) {
+      throw new NotFoundException('User to block not found');
+    }
+
+    // Check if block already exists
+    const existingBlock = await this.prisma.userBlock.findFirst({
+      where: {
+        blockerId: userId,
+        cibleId: blockDto.blockedId,
+        revokedAt: null,
+      },
+    });
+
+    if (existingBlock) {
+      throw new ConflictException('User already blocked');
+    }
+
+    const block = await this.prisma.userBlock.create({
+      data: {
+        blockerId: userId,
+        cibleId: blockDto.blockedId,
+        raison: blockDto.reason,
+      },
+      select: {
+        id: true,
+        cible: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+          },
+        },
+        raison: true,
+        createdAt: true,
+      },
+    });
+
+    this.logger.log(`User ${userId} blocked user ${blockDto.blockedId}`);
+
+    return block;
+  }
+
+  /**
+   * Unblocks a user
+   */
+  async unblockUser(userId: string, blockedId: string) {
+    const existingBlock = await this.prisma.userBlock.findFirst({
+      where: {
+        blockerId: userId,
+        cibleId: blockedId,
+        revokedAt: null,
+      },
+    });
+
+    if (!existingBlock) {
+      throw new NotFoundException('Block not found');
+    }
+
+    await this.prisma.userBlock.update({
+      where: { id: existingBlock.id },
+      data: { revokedAt: new Date() },
+    });
+
+    this.logger.log(`User ${userId} unblocked user ${blockedId}`);
+
+    return { message: 'User unblocked successfully' };
+  }
+
+  /**
+   * Checks if a user is blocked by another user
+   */
+  async isBlockedBy(blockerId: string, blockedId: string): Promise<boolean> {
+    const block = await this.prisma.userBlock.findFirst({
+      where: {
+        blockerId,
+        cibleId: blockedId,
+        revokedAt: null,
+      },
+    });
+
+    return !!block;
+  }
+
+  /**
+   * Lists all users blocked by the current user
+   */
+  async getBlockedUsers(userId: string) {
+    const blocks = await this.prisma.userBlock.findMany({
+      where: {
+        blockerId: userId,
+        revokedAt: null,
+      },
+      select: {
+        id: true,
+        cible: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            avatar: true,
+          },
+        },
+        raison: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return blocks;
+  }
+
+  // ============================================
+  // Admin: List all users
+  // ============================================
 
   /**
    * Liste tous les utilisateurs (admin only)
@@ -191,6 +676,10 @@ export class UserService {
     };
   }
 
+  // ============================================
+  // User search (for messaging autocompletion)
+  // ============================================
+
   /**
    * Recherche des utilisateurs par nom ou email (autocomplétion messagerie)
    */
@@ -222,6 +711,10 @@ export class UserService {
     return users;
   }
 
+  // ============================================
+  // Seller listings
+  // ============================================
+
   /**
    * Récupère les annonces actives d'un vendeur
    */
@@ -234,6 +727,10 @@ export class UserService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  // ============================================
+  // Reviews
+  // ============================================
 
   /**
    * Récupère les avis reçus par un utilisateur

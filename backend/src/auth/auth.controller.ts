@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { RateLimitAuth, RateLimitEmailVerification, RateLimitPasswordChange } from '../common/decorators/rate-limit.decorator';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import {
@@ -36,6 +37,7 @@ export class AuthController {
   // ============================================
 
   @Public()
+  @RateLimitAuth() // T-1.6: anti brute-force (5 req/5min)
   @Post('signup')
   async signup(
     @Body() signupDto: SignupDto,
@@ -47,6 +49,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimitAuth() // T-1.6: anti brute-force (5 req/5min)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -88,6 +91,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimitAuth() // T-1.6: anti brute-force (5 req/5min)
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
@@ -108,6 +112,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimitEmailVerification() // T-1.6: prevent email enumeration (3 req/60min)
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
   async verifyEmail(@Query('token') token: string) {
@@ -116,6 +121,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimitEmailVerification() // T-1.6: prevent email enumeration (3 req/60min)
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
   async resendVerification(@Body() dto: ResendVerificationDto) {
@@ -154,6 +160,7 @@ export class AuthController {
     return this.authService.updateProfile(userId, updateDto);
   }
 
+  @RateLimitPasswordChange() // T-1.6: prevent brute-force on password change (3 req/15min)
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)

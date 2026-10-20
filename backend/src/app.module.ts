@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -13,6 +14,15 @@ import { WorkersModule } from './workers/workers.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ttl: configService.get('RATE_LIMIT_TTL', 60000),
+        limit: configService.get('RATE_LIMIT_MAX', 10),
+        trackExceptions: true,
+      }),
+    }),
     AuthModule,
     UserModule,
     AdminModule,

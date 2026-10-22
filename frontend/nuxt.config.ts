@@ -13,4 +13,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  imports: {
+    dirs: ["services"],
+  },
 });

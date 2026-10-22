@@ -1,10 +1,4 @@
-interface User {
-  id: string;
-  email: string;
-  nom: string;
-  prenom: string;
-  typeCompte: 'particulier' | 'pro';
-}
+import type { User } from '~/types';
 
 interface AuthResponse {
   user: User;
@@ -12,16 +6,18 @@ interface AuthResponse {
 }
 
 export function useAuth() {
-  const user = useState<User | null>('auth.user', () => null);
+  const profile = useState<User | null>('auth.user', () => null);
   const accessToken = useCookie<string | null>('accessToken', {
     default: () => null,
-    maxAge: 60 * 15,
+    maxAge: 60 * 15, // 15 minutes
     sameSite: 'lax',
+    secure: false, // Will be true in production with HTTPS
+    path: '/',
   });
 
   const config = useRuntimeConfig();
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string): Promise<AuthResponse> {
     const res = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/login`, {
       method: 'POST',
       credentials: 'include',
@@ -29,12 +25,12 @@ export function useAuth() {
     });
 
     accessToken.value = res.accessToken;
-    user.value = res.user;
+    profile.value = res.user;
 
     return res;
   }
 
-  async function signup(prenom: string, nom: string, email: string, password: string, typeCompte: string) {
+  async function signup(prenom: string, nom: string, email: string, password: string, typeCompte: string): Promise<AuthResponse> {
     const res = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/signup`, {
       method: 'POST',
       credentials: 'include',
@@ -42,12 +38,12 @@ export function useAuth() {
     });
 
     accessToken.value = res.accessToken;
-    user.value = res.user;
+    profile.value = res.user;
 
     return res;
   }
 
-  async function refreshSession() {
+  async function refreshSession(): Promise<boolean> {
     try {
       const res = await $fetch<{ accessToken: string }>(`${config.public.apiBase}/auth/refresh`, {
         method: 'POST',
@@ -58,12 +54,12 @@ export function useAuth() {
       return true;
     } catch {
       accessToken.value = null;
-      user.value = null;
+      profile.value = null;
       return false;
     }
   }
 
-  async function initAuth() {
+  async function initAuth(): Promise<boolean> {
     if (accessToken.value) {
       try {
         await fetchProfile();
@@ -90,14 +86,10 @@ export function useAuth() {
     }
 
     accessToken.value = null;
-    user.value = null;
-
-    if (import.meta.client) {
-      await navigateTo('/login');
-    }
+    profile.value = null;
   }
 
-  async function fetchProfile() {
+  async function fetchProfile(): Promise<User> {
     if (!accessToken.value) {
       const refreshed = await refreshSession();
       if (!refreshed) {
@@ -113,7 +105,7 @@ export function useAuth() {
 
     try {
       const res = await fetchProfileRequest();
-      user.value = res;
+      profile.value = res;
       return res;
     } catch (error: any) {
       if (error?.response?.status !== 401) {
@@ -126,13 +118,13 @@ export function useAuth() {
       }
 
       const res = await fetchProfileRequest();
-      user.value = res;
+      profile.value = res;
       return res;
     }
   }
 
   return {
-    user,
+    profile,
     accessToken,
     login,
     signup,

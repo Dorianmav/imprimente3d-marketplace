@@ -1,1 +1,156 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #a83900;
+  --color-primary-container: #ff6b2c;
+  --color-primary-on: #ffffff;
+  --color-secondary: #3b6564;
+  --color-secondary-container: #bbe8e6;
+  --color-tertiary: #605e5a;
+  --color-success: #2e9e5b;
+  --color-warning: #e8a317;
+  --color-error: #d64545;
+  --color-info: #2f6fdb;
+  --color-surface: #fdf8f6;
+  --color-surface-dim: #ddd9d7;
+  --color-surface-bright: #fdf8f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f7f3f0;
+  --color-surface-container: #f2edeb;
+  --color-surface-container-high: #ece7e5;
+  --color-surface-container-highest: #e6e2df;
+  --color-on-surface: #1c1b1a;
+  --color-on-surface-variant: #594139;
+  --color-outline: #8d7167;
+  --color-outline-variant: #e2bfb3;
+  --color-border: #e8e4de;
+  --color-border-hover: #dbd6ce;
+
+  --font-sora: "Sora", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+}
+
+/* Base */
+html {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #faf8f5;
+  color: #1c1b1a;
+}
+
+/* Card shadow */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8e4de;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(28, 27, 26, 0.04), 0 1px 2px rgba(28, 27, 26, 0.02);
+}
+
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  border-color: #dbd6ce;
+  box-shadow: 0 8px 16px -4px rgba(28, 27, 26, 0.06), 0 4px 6px -2px rgba(28, 27, 26, 0.03);
+  transform: translateY(-2px);
+}
+
+/* Pill badge */
+.pill {
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+/* Material pills */
+.material-pla { background: #eaf5ee; color: #237a46; }
+.material-petg { background: #eaf2fc; color: #1f56b0; }
+.material-abs { background: #f7ede8; color: #a44219; }
+.material-asa { background: #ede7f6; color: #512da8; }
+.material-tpu { background: #fdf6e8; color: #96680a; }
+.material-resine { background: #f3edf8; color: #70389c; }
+.material-autre { background: #f3efea; color: #64605b; }
+
+/* Status pills */
+.status-attente { background: #fdf6e8; color: #96680a; }
+.status-payee { background: #eaf5ee; color: #237a46; }
+.status-expediee { background: #e8f1fc; color: #1a56b2; }
+.status-livree { background: #eaf5ee; color: #237a46; }
+.status-litige { background: #fcebeb; color: #ba2d2d; }
+.status-annulee { background: #f3efea; color: #64605b; }
+.status-remboursee { background: #f3efea; color: #64605b; }
+
+/* Focus ring primary */
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  border-color: #ff6b2c;
+  box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.15);
+}
+
+/* Bottom nav safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Layer line pattern (additive manufacturing motif) */
+.layer-lines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(232, 228, 222, 0.4) 2px,
+    rgba(232, 228, 222, 0.4) 3px
+  );
+}
+
+/* Hide scrollbar for horizontal scroll */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Price font */
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Loading skeleton */
+@keyframes pulse-skeleton {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton {
+  background: #e6e2df;
+  border-radius: 4px;
+  animation: pulse-skeleton 1.5s ease-in-out infinite;
+}

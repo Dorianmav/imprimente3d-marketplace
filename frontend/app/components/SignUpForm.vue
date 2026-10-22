@@ -6,19 +6,19 @@ defineProps<{ loading?: boolean }>();
 
 const schema = z.object({
   prenom: z
-    .string("Firstname is required")
-    .min(2, "Must be at least 2 characters")
-    .max(100, "Must be at most 100 characters"),
+    .string("Le prénom est requis")
+    .min(2, "2 caractères minimum")
+    .max(100, "100 caractères maximum"),
   nom: z
-    .string("Lastname is required")
-    .min(2, "Must be at least 2 characters")
-    .max(100, "Must be at most 100 characters"),
-  email: z.email("Invalid email"),
+    .string("Le nom est requis")
+    .min(2, "2 caractères minimum")
+    .max(100, "100 caractères maximum"),
+  email: z.email("Email invalide"),
   password: z
-    .string("Password is required")
-    .min(8, "Must be at least 8 characters")
-    .max(128, "Must be at most 128 characters"),
-  typeCompte: z.enum(["particulier", "pro"]).default("particulier"),
+    .string("Le mot de passe est requis")
+    .min(8, "8 caractères minimum")
+    .max(128, "128 caractères maximum"),
+  typeCompte: z.enum(["ACHETEUR", "IMPRIMEUR"]).default("ACHETEUR"),
 });
 
 type Schema = z.output<typeof schema>;
@@ -26,9 +26,9 @@ type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
   prenom: "",
   nom: "",
-  email:  "",
+  email: "",
   password: "",
-  typeCompte: "particulier",
+  typeCompte: "ACHETEUR",
 });
 
 const emit = defineEmits<{ submit: [data: Schema] }>();
@@ -40,29 +40,62 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormField label="Firstname" name="prenom">
-      <UInput v-model="state.prenom" />
+    <div class="grid grid-cols-2 gap-3">
+      <UFormField label="Prénom" name="prenom" class="space-y-1">
+        <UInput
+          v-model="state.prenom"
+          placeholder="Amir"
+          class="rounded-lg"
+        />
+      </UFormField>
+
+      <UFormField label="Nom" name="nom" class="space-y-1">
+        <UInput
+          v-model="state.nom"
+          placeholder="Talbi"
+          class="rounded-lg"
+        />
+      </UFormField>
+    </div>
+
+    <UFormField label="Email" name="email" class="space-y-1">
+      <UInput
+        v-model="state.email"
+        placeholder="vous@exemple.com"
+        icon="mail"
+        class="rounded-lg"
+      />
     </UFormField>
 
-    <UFormField label="Lastname" name="nom">
-      <UInput v-model="state.nom" />
+    <UFormField label="Mot de passe" name="password" class="space-y-1">
+      <UInput
+        v-model="state.password"
+        type="password"
+        placeholder="8 caractères minimum"
+        icon="lock"
+        class="rounded-lg"
+      />
     </UFormField>
 
-    <UFormField label="Email" name="email">
-      <UInput v-model="state.email" />
+    <UFormField label="Type de compte" name="typeCompte" class="space-y-1">
+      <USelect
+        v-model="state.typeCompte"
+        :items="[
+          { label: 'Acheteur', value: 'ACHETEUR', icon: 'shopping-cart' },
+          { label: 'Imprimeur', value: 'IMPRIMEUR', icon: 'cube' },
+        ]"
+        value-attribute="value"
+        class="rounded-lg"
+      />
     </UFormField>
 
-    <UFormField label="Password" name="password">
-      <UInput v-model="state.password" type="password" />
-    </UFormField>
-
-    <UFormField label="Type de compte" name="typeCompte">
-      <USelect v-model="state.typeCompte" :items="[
-        { label: 'Particulier', value: 'particulier' },
-        { label: 'Pro', value: 'pro' }
-      ]" />
-    </UFormField>
-
-    <UButton type="submit" :loading="loading"> Créer mon compte </UButton>
+    <UButton
+      type="submit"
+      :loading="loading"
+      block
+      class="rounded-full font-semibold"
+    >
+      Créer mon compte
+    </UButton>
   </UForm>
 </template>

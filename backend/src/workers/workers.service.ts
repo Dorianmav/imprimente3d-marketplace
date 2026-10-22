@@ -22,6 +22,12 @@ export class WorkersService {
     private readonly reviewQueue: Queue,
     @InjectQueue('message-cleanup')
     private readonly messageCleanupQueue: Queue,
+    @InjectQueue('devis-expiration')
+    private readonly devisQueue: Queue,
+    @InjectQueue('demande-expiration')
+    private readonly demandeQueue: Queue,
+    @InjectQueue('offre-expiration')
+    private readonly offreQueue: Queue,
     private readonly configService: ConfigService,
   ) {}
 
@@ -105,7 +111,50 @@ export class WorkersService {
   async scheduleMessageCleanup(): Promise<void> {
     await this.messageCleanupQueue.add('cleanup', {}, {
       jobId: 'cleanup:messages',
-      repeat: { cron: '0 0 * * 0' }, // Weekly
+      repeat: { pattern: '0 0 * * 0' }, // Weekly
+      removeOnFail: 50,
+    });
+  }
+
+  // ============================================
+  // Devis expiration (payment TTL)
+  // ============================================
+
+  async scheduleDevisExpiration(devisId: string, delayMs: number): Promise<void> {
+    await this.devisQueue.add('devis-expiration', { devisId }, {
+      delay: delayMs,
+      jobId: `devis-exp:${devisId}`,
+      removeOnFail: 50,
+    });
+  }
+
+  async cancelDevisExpiration(devisId: string): Promise<void> {
+    const job = await this.devisQueue.getJob(`devis-exp:${devisId}`);
+    if (job) {
+      await job.remove();
+    }
+  }
+
+  // ============================================
+  // Demande expiration
+  // ============================================
+
+  async checkDemandeExpiration(): Promise<void> {
+    await this.demandeQueue.add('demande-expiration', {}, {
+      jobId: 'demande-expiration:cron',
+      repeat: { pattern: '0 * * * *' }, // Every hour
+      removeOnFail: 50,
+    });
+  }
+
+  // ============================================
+  // Offer expiration
+  // ============================================
+
+  async checkOffreExpiration(): Promise<void> {
+    await this.offreQueue.add('offre-expiration', {}, {
+      jobId: 'offre-expiration:cron',
+      repeat: { pattern: '0 * * * *' }, // Every hour
       removeOnFail: 50,
     });
   }

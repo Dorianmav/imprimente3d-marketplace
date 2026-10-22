@@ -329,7 +329,7 @@ export class AuthService {
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
-        emailVerifiedAt: true,
+        emailVerifieAt: true,
         cguVersionAcceptee: true,
         cguAccepteeAt: true,
         createdAt: true,
@@ -675,9 +675,9 @@ export class AuthService {
             userId,
             imprimantes: [],
             materiaux: [],
-            localisation: {},
             delaiMoyenJours: 7,
             tarifsIndicatifs: {},
+            zoneExpedition: 'FR',
           },
         });
       }

@@ -1,59 +1,123 @@
-import { Process, Processor } from '@nestjs/bullmq';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
+import { NotificationService } from '../../notification/notification.service';
 
+/**
+ * Vacation mode worker (CDC §5)
+ *
+ * After VACATION_INACTIVITY_DAYS (15) days without activity:
+ * - imprimeur passe en pause automatique
+ * - disponibles = false
+ * - pause_origine = auto
+ * - annonces actives → en_pause
+ *
+ * Activity includes: sent message, submitted quote, order update, listing edit, manual availability toggle.
+ * Simple login or reading doesn't count.
+ *
+ * Notification at J+12 before auto-activation.
+ */
 @Processor('vacation-mode')
-export class VacationModeWorker {
+export class VacationModeWorker extends WorkerHost {
   private readonly logger = new Logger(VacationModeWorker.name);
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
-  ) {}
+    private readonly notificationService: NotificationService,
+  ) {
+    super();
+  }
 
-  @Process('vacation-check')
-  async handleVacationCheck(job: Job<{ userId: string }>) {
-    const { userId } = job.data;
-    const inactivityDays = this.configService.get('VACATION_INACTIVITY_DAYS') ?? 15;
+  async process(job: Job): Promise<void> {
+    if (job.name === 'vacation-reminder') {
+      return this.handleVacationReminder(job);
+    }
+    if (job.name === 'vacation-activate') {
+      return this.handleVacationActivate(job);
+    }
+  }
 
-    // Check last activity for this user (imprimeur)
-    const lastActivity = await this.prisma.imprimeurProfil.findUnique({
-      where: { userId },
-      select: { derniereActiviteAt: true, disponible: true },
+  /**
+   * J+12 reminder: notify imprimeur approaching auto-pause
+   */
+  async handleVacationReminder(job: Job<{ imprimeurId: string }>) {
+    const { imprimeurId } = job.data;
+
+    const imprimeur = await this.prisma.imprimeurProfil.findUnique({
+      where: { userId: imprimeurId },
+      include: { user: true },
     });
 
-    if (!lastActivity?.derniereActiviteAt) {
+    if (!imprimeur || imprimeur.enPauseDepuis === null) {
       return;
     }
 
-    const daysSinceActivity = Math.floor(
-      (Date.now() - lastActivity.derniereActiviteAt.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    await this.notificationService.sendNotification({
+      userId: imprimeurId,
+      event: 'NEW_MESSAGE',
+      data: {
+        message: `Mode vacances imminent: après 15 jours d'inactivité, votre profil sera mis en pause.`,
+        pushTitle: 'Mode vacances imminent',
+        pushBody: 'Dans 3 jours, votre profil sera en pause automatique.',
+      },
+    });
 
-    if (daysSinceActivity >= inactivityDays && lastActivity.disponible) {
-      // Auto-enable vacation mode
-      await this.prisma.imprimeurProfil.update({
-        where: { userId },
-        data: {
-          disponible: false,
-          enPauseDepuis: new Date(),
-          pauseOrigine: 'AUTO',
-        },
-      });
+    this.logger.log(`Vacation reminder sent for imprimeur ${imprimeurId}`);
+  }
 
-      // Set all active listings to 'en_pause'
-      await this.prisma.annonceVente.updateMany({
-        where: {
-          vendeurId: userId,
-          statut: 'ACTIVE',
-        },
-        data: { statut: 'EN_PAUSE' },
-      });
+  /**
+   * Auto-activate vacation mode
+   */
+  async handleVacationActivate(job: Job<{ imprimeurId: string }>) {
+    const { imprimeurId } = job.data;
 
-      // TODO: Send notification to user at J+12 (before auto-activation)
-      this.logger.log(`User ${userId} auto-entered vacation mode after ${daysSinceActivity} days of inactivity`);
+    const imprimeur = await this.prisma.imprimeurProfil.findUnique({
+      where: { userId: imprimeurId },
+      include: { user: true },
+    });
+
+    if (!imprimeur) {
+      return;
     }
+
+    // Don't activate if already paused (manual or stripe)
+    if (imprimeur.enPauseDepuis) {
+      this.logger.debug(`Imprimeur ${imprimeurId} already paused, skipping auto-activate`);
+      return;
+    }
+
+    // Activate auto-pause
+    const now = new Date();
+    await this.prisma.imprimeurProfil.update({
+      where: { userId: imprimeurId },
+      data: {
+        disponible: false,
+        enPauseDepuis: now,
+        pauseOrigine: 'AUTO',
+      },
+    });
+
+    // Pause all active listings
+    await this.prisma.annonceVente.updateMany({
+      where: {
+        vendeurId: imprimeurId,
+        statut: 'ACTIVE',
+      },
+      data: { statut: 'EN_PAUSE' },
+    });
+
+    // Notify imprimeur
+    await this.notificationService.sendNotification({
+      userId: imprimeurId,
+      event: 'QUOTE_ACCEPTED',
+      data: {
+        message: `Mode vacances activé automatiquement: 15 jours d'inactivité détectés.`,
+        pushTitle: 'Mode vacances activé',
+        pushBody: 'Votre profil et vos annonces sont en pause.',
+      },
+    });
+
+    this.logger.log(`Vacation mode activated for imprimeur ${imprimeurId}`);
   }
 }

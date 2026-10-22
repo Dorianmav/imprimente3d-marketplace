@@ -66,13 +66,14 @@ describe('AuthController', () => {
 
   describe('signup', () => {
     it('should register a new user', async () => {
+      const mockRes = { cookie: jest.fn() } as any;
       const result = await controller.signup({
         email: 'test@test.com',
         password: 'Password123!',
         nom: 'Doe',
         prenom: 'John',
         typeCompte: 'particulier',
-      } as any);
+      } as any, mockRes);
 
       expect(result.user.email).toBe('test@test.com');
       expect(result.accessToken).toBe('access_token');
@@ -81,10 +82,11 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should login an existing user', async () => {
+      const mockRes = { cookie: jest.fn() } as any;
       const result = await controller.login({
         email: 'test@test.com',
         password: 'Password123!',
-      } as any);
+      } as any, mockRes);
 
       expect(result.user.email).toBe('test@test.com');
       expect(result.accessToken).toBe('access_token');

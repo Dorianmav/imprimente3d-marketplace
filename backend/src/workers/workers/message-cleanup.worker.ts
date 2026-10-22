@@ -1,15 +1,22 @@
-import { Process, Processor } from '@nestjs/bullmq';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Processor('message-cleanup')
-export class MessageCleanupWorker {
+export class MessageCleanupWorker extends WorkerHost {
   private readonly logger = new Logger(MessageCleanupWorker.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {
+    super();
+  }
 
-  @Process('cleanup')
+  async process(job: Job): Promise<void> {
+    if (job.name === 'cleanup') {
+      return this.handleMessageCleanup();
+    }
+  }
+
   async handleMessageCleanup() {
     // Delete messages older than 24 months without activity
     // (except those involved in reports)

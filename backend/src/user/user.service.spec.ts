@@ -45,6 +45,7 @@ describe('UserService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
     $executeRaw: jest.fn().mockResolvedValue(undefined),
   };
@@ -375,9 +376,7 @@ describe('UserService', () => {
       });
       (mockPrismaService.userBlock.findFirst as jest.Mock).mockResolvedValue(null);
       (mockPrismaService.userBlock.create as jest.Mock).mockResolvedValue({
-        id: 'block-1',
-        cible: { id: 'blocked-user', nom: 'Blocked', prenom: 'User', email: 'blocked@example.com' },
-        raison: 'Spam',
+        blocked: { id: 'blocked-user', nom: 'Blocked', prenom: 'User', email: 'blocked@example.com' },
         createdAt: new Date(),
       });
 
@@ -386,7 +385,7 @@ describe('UserService', () => {
         reason: 'Spam',
       });
 
-      expect(result.cible.id).toBe('blocked-user');
+      expect(result.blocked.id).toBe('blocked-user');
       expect(mockPrismaService.userBlock.create).toHaveBeenCalled();
     });
 
@@ -405,22 +404,20 @@ describe('UserService', () => {
     });
 
     it('should unblock a user', async () => {
-      const existingBlock = { id: 'block-1', blockerId: 'user-1', cibleId: 'blocked-user' };
+      const existingBlock = { blockerId: 'user-1', blockedId: 'blocked-user' };
       (mockPrismaService.userBlock.findFirst as jest.Mock).mockResolvedValue(existingBlock);
-      (mockPrismaService.userBlock.update as jest.Mock).mockResolvedValue(undefined);
+      (mockPrismaService.userBlock.delete as jest.Mock).mockResolvedValue(undefined);
 
       const result = await service.unblockUser('user-1', 'blocked-user');
 
       expect(result.message).toBe('User unblocked successfully');
-      expect(mockPrismaService.userBlock.update).toHaveBeenCalled();
+      expect(mockPrismaService.userBlock.delete).toHaveBeenCalled();
     });
 
     it('should get blocked users list', async () => {
       (mockPrismaService.userBlock.findMany as jest.Mock).mockResolvedValue([
         {
-          id: 'block-1',
-          cible: { id: 'blocked-1', nom: 'Blocked', prenom: 'User', email: 'blocked@example.com', avatar: null },
-          raison: 'Spam',
+          blocked: { id: 'blocked-1', nom: 'Blocked', prenom: 'User', email: 'blocked@example.com', avatar: null },
           createdAt: new Date(),
         },
       ]);
@@ -428,7 +425,7 @@ describe('UserService', () => {
       const result = await service.getBlockedUsers('user-1');
 
       expect(result).toHaveLength(1);
-      expect(result[0].cible.nom).toBe('Blocked');
+      expect(result[0].nom).toBe('Blocked');
     });
   });
 

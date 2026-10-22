@@ -24,7 +24,7 @@ describe('AuthGuard', () => {
         {
           provide: Reflector,
           useValue: {
-            getAllAndOverride: jest.fn(),
+            getAllAndOverride: jest.fn().mockReturnValue(null),
           },
         },
       ],
@@ -41,7 +41,7 @@ describe('AuthGuard', () => {
 
   describe('isPublic', () => {
     it('should allow access to public routes', async () => {
-      reflector.getAllAndOverride.mockReturnValue(true);
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(true);
 
       const context = {
         getHandler: () => ({}),
@@ -58,7 +58,7 @@ describe('AuthGuard', () => {
 
   describe('token validation', () => {
     it('should throw UnauthorizedException when no token is provided', async () => {
-      reflector.getAllAndOverride.mockReturnValue(false);
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(false);
 
       const context = {
         getHandler: () => ({}),
@@ -72,7 +72,7 @@ describe('AuthGuard', () => {
     });
 
     it('should throw UnauthorizedException for invalid token', async () => {
-      reflector.getAllAndOverride.mockReturnValue(false);
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(false);
       (jwtService.verifyAsync as jest.Mock).mockRejectedValue(new Error('Invalid token'));
 
       const context = {
@@ -87,7 +87,7 @@ describe('AuthGuard', () => {
     });
 
     it('should allow access with valid token', async () => {
-      reflector.getAllAndOverride.mockReturnValue(false);
+      (reflector.getAllAndOverride as jest.Mock).mockReturnValue(false);
       (jwtService.verifyAsync as jest.Mock).mockResolvedValue({ sub: 'user-123', role: 'particulier' });
 
       const req = { headers: { authorization: 'Bearer valid_token' }, user: undefined };
@@ -105,7 +105,7 @@ describe('AuthGuard', () => {
 
   describe('role checking (T-1.7)', () => {
     it('should allow access when user has required role', async () => {
-      reflector.getAllAndOverride
+      (reflector.getAllAndOverride as jest.Mock)
         .mockReturnValueOnce(false) // IS_PUBLIC_KEY
         .mockReturnValueOnce(['admin']); // ROLES_KEY
 
@@ -123,7 +123,7 @@ describe('AuthGuard', () => {
     });
 
     it('should deny access when user lacks required role', async () => {
-      reflector.getAllAndOverride
+      (reflector.getAllAndOverride as jest.Mock)
         .mockReturnValueOnce(false) // IS_PUBLIC_KEY
         .mockReturnValueOnce(['admin']); // ROLES_KEY
 
@@ -140,7 +140,7 @@ describe('AuthGuard', () => {
     });
 
     it('should allow multiple roles', async () => {
-      reflector.getAllAndOverride
+      (reflector.getAllAndOverride as jest.Mock)
         .mockReturnValueOnce(false) // IS_PUBLIC_KEY
         .mockReturnValueOnce(['admin', 'vendeur']); // ROLES_KEY
 
@@ -158,7 +158,7 @@ describe('AuthGuard', () => {
     });
 
     it('should default to particulier role when not specified in token', async () => {
-      reflector.getAllAndOverride
+      (reflector.getAllAndOverride as jest.Mock)
         .mockReturnValueOnce(false) // IS_PUBLIC_KEY
         .mockReturnValueOnce(['particulier']); // ROLES_KEY
 

@@ -12,6 +12,16 @@ import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { WorkersModule } from './workers/workers.module';
 import { AuthGuard } from './auth/auth.guard';
+import { LitigeModule } from './litige/litige.module';
+import { VenteModule } from './vente/vente.module';
+import { CommandeModule } from './commande/commande.module';
+import { DemandeModule } from './demande/demande.module';
+import { DevisModule } from './devis/devis.module';
+import { MessagingModule } from './messaging/messaging.module';
+import { SearchModule } from './search/search.module';
+import { StorageModule } from './storage/storage.module';
+import { StripeModule } from './stripe/stripe.module';
+import { AvisModule } from './avis/avis.module';
 
 @Global()
 @Module({
@@ -21,9 +31,10 @@ import { AuthGuard } from './auth/auth.guard';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        ttl: configService.get('RATE_LIMIT_TTL', 60000),
-        limit: configService.get('RATE_LIMIT_MAX', 10),
-        trackExceptions: true,
+        throttlers: [{
+          limit: Number(configService.get('RATE_LIMIT_MAX', '10')),
+          ttl: Number(configService.get('RATE_LIMIT_TTL', '60000')),
+        }],
       }),
     }),
     AuthModule,
@@ -32,6 +43,16 @@ import { AuthGuard } from './auth/auth.guard';
     NotificationModule,
     PrismaModule,
     WorkersModule,
+    VenteModule,
+    CommandeModule,
+    DemandeModule,
+    DevisModule,
+    LitigeModule,
+    MessagingModule,
+    SearchModule,
+    StorageModule,
+    StripeModule,
+    AvisModule,
   ],
   controllers: [AppController],
   providers: [

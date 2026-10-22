@@ -1,5 +1,5 @@
-import { applyDecorator, SetMetadata } from '@nestjs/common';
-import { ThrottlerLimit, ThrottlerTtl } from '@nestjs/throttler';
+import { applyDecorators, SetMetadata } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 
 /**
  * Metadata key for custom rate limit override
@@ -12,9 +12,8 @@ export const RATE_LIMIT_OVERRIDE = 'rate_limit_override';
  * - Applied to login, register, forgot-password, reset-password
  */
 export function RateLimitAuth() {
-  return applyDecorator(
-    ThrottlerLimit('5'),
-    ThrottlerTtl('300'), // 5 minutes in seconds
+  return applyDecorators(
+    Throttle({ default: { limit: 5, ttl: 300000 } }),
     SetMetadata(RATE_LIMIT_OVERRIDE, true),
   );
 }
@@ -24,9 +23,8 @@ export function RateLimitAuth() {
  * - 3 requests per 15 minutes (prevent credential stuffing)
  */
 export function RateLimitPasswordChange() {
-  return applyDecorator(
-    ThrottlerLimit('3'),
-    ThrottlerTtl('900'), // 15 minutes in seconds
+  return applyDecorators(
+    Throttle({ default: { limit: 3, ttl: 900000 } }),
     SetMetadata(RATE_LIMIT_OVERRIDE, true),
   );
 }
@@ -36,9 +34,8 @@ export function RateLimitPasswordChange() {
  * - 3 requests per 60 minutes (prevent email enumeration)
  */
 export function RateLimitEmailVerification() {
-  return applyDecorator(
-    ThrottlerLimit('3'),
-    ThrottlerTtl('3600'), // 60 minutes in seconds
+  return applyDecorators(
+    Throttle({ default: { limit: 3, ttl: 3600000 } }),
     SetMetadata(RATE_LIMIT_OVERRIDE, true),
   );
 }

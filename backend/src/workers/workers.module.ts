@@ -8,6 +8,9 @@ import { VacationModeWorker } from './workers/vacation-mode.worker';
 import { DisputeWorker } from './workers/dispute.worker';
 import { ReviewWorker } from './workers/review-worker';
 import { MessageCleanupWorker } from './workers/message-cleanup.worker';
+import { DevisExpirationWorker } from './workers/devis-expiration.worker';
+import { DemandeExpirationWorker } from './workers/demande-expiration.worker';
+import { OffreExpirationWorker } from './workers/offre-expiration.worker';
 
 const WORKERS = [
   CheckoutExpirationWorker,
@@ -16,6 +19,21 @@ const WORKERS = [
   DisputeWorker,
   ReviewWorker,
   MessageCleanupWorker,
+  DevisExpirationWorker,
+  DemandeExpirationWorker,
+  OffreExpirationWorker,
+];
+
+const QUEUE_NAMES = [
+  'checkout-expiration',
+  'order-expiration',
+  'vacation-mode',
+  'dispute',
+  'review',
+  'message-cleanup',
+  'devis-expiration',
+  'demande-expiration',
+  'offre-expiration',
 ];
 
 @Module({
@@ -38,11 +56,7 @@ const WORKERS = [
       }),
       inject: [ConfigService],
     }),
-    ...WORKERS.map((Worker) =>
-      BullModule.registerQueue({
-        name: Worker.prototype['queueName'] || 'default',
-      }),
-    ),
+    ...QUEUE_NAMES.map((name) => BullModule.registerQueue({ name })),
   ],
   providers: [WorkersService, ...WORKERS],
   exports: [WorkersService],

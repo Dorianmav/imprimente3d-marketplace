@@ -134,7 +134,7 @@ export class UserController {
   async search(
     @CurrentUser('id') userId: string,
     @Query('q') query: string,
-    @Query('limit') limit: number,
+    @Query('limit') limit: string,
   ) {
     const parsedLimit = limit ? parseInt(limit, 10) : 10;
     return this.userService.searchUsers(query, userId, parsedLimit);
@@ -162,5 +162,23 @@ export class UserController {
   @Get(':id/listings')
   async getUserListings(@Param('id') userId: string) {
     return this.userService.getSellerActiveListings(userId);
+  }
+
+  // ============================================
+  // Vendeur fiscal — T-1.8 (compliance)
+  // ============================================
+
+  @Post('me/fiscal')
+  async submitFiscalInfo(
+    @CurrentUser('id') userId: string,
+    @Body('dateNaissance') dateNaissance: string,
+    @Body('adresseFiscale') adresseFiscale: { rue: string; cp: string; ville: string; pays: string },
+  ) {
+    return this.userService.submitFiscalInfo(userId, dateNaissance, adresseFiscale);
+  }
+
+  @Get('me/fiscal')
+  async getFiscalStatus(@CurrentUser('id') userId: string) {
+    return this.userService.getFiscalStatus(userId);
   }
 }

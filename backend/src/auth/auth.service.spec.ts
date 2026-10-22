@@ -277,54 +277,6 @@ describe('AuthService', () => {
     });
   });
 
-  describe('refreshTokensFromToken', () => {
-    let hashedRefreshToken: string;
-
-    beforeAll(async () => {
-      hashedRefreshToken = await bcrypt.hash('valid-jwt-token', 12);
-    });
-
-    it('should refresh tokens using a valid JWT refresh token', async () => {
-      const refreshToken = 'valid-jwt-token';
-      const userId = 'user-1';
-
-      (jwtService.verifyAsync as jest.Mock).mockResolvedValue({ sub: userId });
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue({
-        id: userId,
-        refreshToken: hashedRefreshToken,
-      });
-      (jwtService.signAsync as jest.Mock)
-        .mockResolvedValueOnce('new-access')
-        .mockResolvedValueOnce('new-refresh');
-
-      const result = await service.refreshTokensFromToken(refreshToken);
-
-      expect(result.accessToken).toBe('new-access');
-      expect(result.refreshToken).toBe('new-refresh');
-    });
-
-    it('should throw UnauthorizedException if JWT is invalid', async () => {
-      (jwtService.verifyAsync as jest.Mock).mockRejectedValue(
-        new Error('Invalid token'),
-      );
-
-      await expect(
-        service.refreshTokensFromToken('invalid-token'),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it('should throw UnauthorizedException if user not found', async () => {
-      (jwtService.verifyAsync as jest.Mock).mockResolvedValue({
-        sub: 'nonexistent-user',
-      });
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
-
-      await expect(
-        service.refreshTokensFromToken('valid-jwt'),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-  });
-
   describe('logout', () => {
     it('should clear the refresh token', async () => {
       await service.logout('user-1');

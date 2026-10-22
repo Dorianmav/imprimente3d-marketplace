@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
@@ -62,6 +63,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimitAuth() // T-1.6: rate limit refresh token endpoint (5 req/5min)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(
@@ -81,9 +83,9 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(
-    @CurrentUser('id') userId: string,
-    @Body('refreshToken', { optional: true }) refreshToken?: string,
+    @Body('refreshToken') refreshToken: string | undefined,
     @Res({ passthrough: true }) res: Response,
+    @CurrentUser('id') userId: string,
   ) {
     await this.authService.logout(userId, refreshToken);
     res.clearCookie('refreshToken');

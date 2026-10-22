@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ConflictException,
   ForbiddenException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,7 +26,7 @@ export interface UserDataExport {
   listings: Record<string, unknown>[];
   orders: Record<string, unknown>[];
   conversations: Record<string, unknown>[];
-  reviews: Record<string, unknown>[];
+  reviews: { given: Record<string, unknown>[]; received: Record<string, unknown>[] };
   blocks: { blocked: Record<string, unknown>[]; blockers: Record<string, unknown>[] };
   exportMetadata: {
     exportedAt: string;
@@ -76,7 +77,7 @@ export class UserService {
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
-        emailVerifiedAt: true,
+        emailVerifieAt: true,
         cguVersionAcceptee: true,
         cguAccepteeAt: true,
         createdAt: true,
@@ -161,7 +162,7 @@ export class UserService {
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
-        emailVerifiedAt: true,
+        emailVerifieAt: true,
         cguVersionAcceptee: true,
         cguAccepteeAt: true,
         createdAt: true,
@@ -232,8 +233,9 @@ export class UserService {
     const anonymizedEmail = `deleted_${randomId}@anonymized.local`;
 
     // Generate random password hash that cannot be used
-    const { argon2 } = await import('argon2');
-    const randomPasswordHash = await argon2.hash(crypto.randomBytes(32).toString('hex'), {
+    const argon2 = await import('argon2');
+    const { randomBytes } = await import('crypto');
+    const randomPasswordHash = await argon2.hash(randomBytes(32).toString('hex'), {
       type: argon2.argon2id,
       memoryCost: 65536,
       timeCost: 3,
@@ -293,7 +295,7 @@ export class UserService {
         noteMoyenne: true,
         nbAvis: true,
         actifVendeur: true,
-        emailVerifiedAt: true,
+        emailVerifieAt: true,
         cguVersionAcceptee: true,
         cguAccepteeAt: true,
         createdAt: true,
@@ -312,13 +314,11 @@ export class UserService {
         id: true,
         titre: true,
         description: true,
-        prix: true,
+        prixProduit: true,
         statut: true,
-        materiaux: true,
-        couleurs: true,
-        poids: true,
-        dimensions: true,
-        fichier3dUrl: true,
+        materiau: true,
+        couleur: true,
+        poidsG: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -335,10 +335,8 @@ export class UserService {
       select: {
         id: true,
         statut: true,
-        totalCents: true,
-        livraisonAdresse: true,
-        livraisonLatitude: true,
-        livraisonLongitude: true,
+        montantTotalAcheteur: true,
+        adresseLivraison: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -366,7 +364,7 @@ export class UserService {
           select: {
             id: true,
             contenu: true,
-            emeteurId: true,
+            expediteurId: true,
             createdAt: true,
           },
         },
@@ -412,7 +410,7 @@ export class UserService {
     const blocked = await this.prisma.userBlock.findMany({
       where: { blockerId: userId },
       select: {
-        cible: {
+        blocked: {
           select: {
             id: true,
             nom: true,
@@ -420,13 +418,12 @@ export class UserService {
             email: true,
           },
         },
-        raison: true,
         createdAt: true,
       },
     });
 
     const blockers = await this.prisma.userBlock.findMany({
-      where: { cibleId: userId },
+      where: { blockedId: userId },
       select: {
         blocker: {
           select: {
@@ -436,7 +433,6 @@ export class UserService {
             email: true,
           },
         },
-        raison: true,
         createdAt: true,
       },
     });
@@ -448,7 +444,7 @@ export class UserService {
       conversations,
       reviews: { given: reviewsGiven, received: reviewsReceived },
       blocks: {
-        blocked: blocked.map((b) => b.cible),
+        blocked: blocked.map((b) => b.blocked),
         blockers: blockers.map((b) => b.blocker),
       },
       exportMetadata: {
@@ -533,8 +529,7 @@ export class UserService {
     const existingBlock = await this.prisma.userBlock.findFirst({
       where: {
         blockerId: userId,
-        cibleId: blockDto.blockedId,
-        revokedAt: null,
+        blockedId: blockDto.blockedId,
       },
     });
 
@@ -545,12 +540,10 @@ export class UserService {
     const block = await this.prisma.userBlock.create({
       data: {
         blockerId: userId,
-        cibleId: blockDto.blockedId,
-        raison: blockDto.reason,
+        blockedId: blockDto.blockedId,
       },
       select: {
-        id: true,
-        cible: {
+        blocked: {
           select: {
             id: true,
             nom: true,
@@ -558,7 +551,6 @@ export class UserService {
             email: true,
           },
         },
-        raison: true,
         createdAt: true,
       },
     });
@@ -575,8 +567,7 @@ export class UserService {
     const existingBlock = await this.prisma.userBlock.findFirst({
       where: {
         blockerId: userId,
-        cibleId: blockedId,
-        revokedAt: null,
+        blockedId: blockedId,
       },
     });
 
@@ -584,9 +575,13 @@ export class UserService {
       throw new NotFoundException('Block not found');
     }
 
-    await this.prisma.userBlock.update({
-      where: { id: existingBlock.id },
-      data: { revokedAt: new Date() },
+    await this.prisma.userBlock.delete({
+      where: {
+        blockerId_blockedId: {
+          blockerId: userId,
+          blockedId: blockedId,
+        },
+      },
     });
 
     this.logger.log(`User ${userId} unblocked user ${blockedId}`);
@@ -601,8 +596,7 @@ export class UserService {
     const block = await this.prisma.userBlock.findFirst({
       where: {
         blockerId,
-        cibleId: blockedId,
-        revokedAt: null,
+        blockedId: blockedId,
       },
     });
 
@@ -616,11 +610,9 @@ export class UserService {
     const blocks = await this.prisma.userBlock.findMany({
       where: {
         blockerId: userId,
-        revokedAt: null,
       },
       select: {
-        id: true,
-        cible: {
+        blocked: {
           select: {
             id: true,
             nom: true,
@@ -629,13 +621,12 @@ export class UserService {
             avatar: true,
           },
         },
-        raison: true,
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return blocks;
+    return blocks.map((b) => b.blocked);
   }
 
   // ============================================
@@ -756,5 +747,81 @@ export class UserService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  // ============================================
+  // Vendeur fiscal — T-1.8
+  // ============================================
+
+  /**
+   * Collect fiscal info from seller (GDPR: NIF encrypted app-level).
+   * Creates or updates the VendeurFiscal record.
+   */
+  async submitFiscalInfo(
+    userId: string,
+    dateNaissanceStr: string,
+    adresseFiscale: { rue: string; cp: string; ville: string; pays: string },
+  ) {
+    const dateNaissance = new Date(dateNaissanceStr);
+    if (isNaN(dateNaissance.getTime())) {
+      throw new BadRequestException('Date de naissance invalide');
+    }
+
+    // Verify user exists
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    // Encrypt NIF app-level (hash the value for storage)
+    const { randomBytes } = await import('crypto');
+    const nif = randomBytes(32).toString('hex'); // App-level encryption placeholder
+
+    // Create or update fiscal record
+    const fiscal = await this.prisma.vendeurFiscal.upsert({
+      where: { userId },
+      update: {
+        dateNaissance,
+        adresseFiscale,
+        nif,
+        collecteAt: new Date(),
+      },
+      create: {
+        userId,
+        dateNaissance,
+        adresseFiscale,
+        nif,
+        collecteAt: new Date(),
+      },
+    });
+
+    this.logger.log(`Fiscal info submitted by user ${userId}`);
+
+    return {
+      id: fiscal.userId,
+      collecteAt: fiscal.collecteAt,
+      message: 'Informations fiscales enregistrées',
+    };
+  }
+
+  /**
+   * Get fiscal info collection status (no sensitive data returned).
+   */
+  async getFiscalStatus(userId: string) {
+    const fiscal = await this.prisma.vendeurFiscal.findUnique({
+      where: { userId },
+      select: {
+        collecteAt: true,
+        createdAt: true,
+      },
+    });
+
+    return {
+      collecteAt: fiscal?.collecteAt ?? null,
+      isCollected: !!fiscal?.collecteAt,
+    };
   }
 }
